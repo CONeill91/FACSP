@@ -1,0 +1,558 @@
+options{
+    IGNORE_CASE = false;
+}
+
+// ** SECTION 2 - USER CODE **
+PARSER_BEGIN(CasperParser)
+import model.*;
+import java.util.*;
+public class CasperParser {
+
+    public static void main(String [] args){
+        CasperParser parser;
+        if(args.length == 0){
+            System.out.println("CasperParser: Reading from Standard Input...");
+            parser = new CasperParser(System.in);
+        }
+        else if(args.length == 1){
+            System.out.println("CasperParser: Reading from file " + args[0] + "...");
+            try{
+                parser = new CasperParser(new java.io.FileInputStream(args[0]));
+            }
+            catch(java.io.FileNotFoundException e){
+                System.out.println("CasperParser: File " + args[0] + "  not found");
+                return;
+            }
+        }
+        else{
+        System.out.println("CasperParser: Usage is one of : ");
+        System.out.println("\t\t java CasperParser < inputFile");
+        System.out.println("OR");
+        System.out.println("\t\t java CasperParser inputFile");
+        return;
+        }
+
+        try{
+            Protocol p = parser.script();
+            System.out.println(p.getIntruder().getId());
+        }
+        catch(ParseException e){
+            System.out.print(e.getMessage());
+        }
+
+      
+    }
+}
+
+PARSER_END(CasperParser)
+// ** SECTION 3 - TOKEN DEFINITIONS & SKIPS **
+
+
+SKIP : {
+   // <SINGLE_LINE_COMMENT : "--" (~["\r"])* ("\r") >
+    <SINGLE_LINE_COMMENT : "--" (~["\n", "\r"])* ("\r" | "\n" | "\r\n") >
+}
+
+SKIP : // IGNORE SPACES, TABS, NEWLINES, FORM FEEDS & CARRIAGE RETURNS
+{
+            " "
+        |   "\t"
+        |   "\f"
+        |   "\r"
+        |   "\n"
+}
+
+TOKEN : // KEYWORDS
+{
+        <FREE_VARS : "#Free variables">
+    |   <INVERSE_KEYS : "InverseKeys =">
+    |   <PROCESSES : "#Processes">
+    |   <KNOWS : "knows">
+    |   <GENERATES : "generates">
+    |   <PROT_DESC : "#Protocol description">
+    |   <SPEC : "#Specification">
+    |   <SECRET : "Secret">
+    |   <STRONG_SECRET : "StrongSecret">
+    |   <AGREEMENT : "Agreement">
+    |   <N_I_AGREEMENT : "NonInjectiveAgreement">
+    |   <WEAK_AGREEMENT : "WeakAgreement">
+    |   <ALIVENESS : "Aliveness">
+    |   <TIMED_AGREEMENT : "TimedAgreement">
+    |   <TIMED_N_I_AGREEMENT : "TimedNonInjectiveAgreement">
+    |   <TIMED_WEAK_AGREEMENT : "TimedWeakAgreement">
+    |   <TIMED_ALIVENESS : "TimedAliveness">
+    |   <IF : "if">
+    |   <THEN : "then">
+    |   <AND : "and">
+    |   <OR : "or">
+    |   <PREV : "previously">
+    |   <SENDS : "sends">
+    |   <RECEIVES : "receives">
+    |   <MESSAGE : "message">
+    |   <FROM : "from">
+    |   <TO : "to">
+    |   <CONTAINING : "containing">
+    |   <FOR : "for">
+    |   <EQ : "#Equivalences">
+    |   <FOR_ALL : "forall">
+    |   <ACTUAL_VARS : "#Actual variables">
+    |   <EXTERNAL : "External">
+    |   <INTERNAL_KNOWN : "InternalKnown">
+    |   <INTERNAL_UNKNOWN : "InternalUnknown">
+    |   <TIMESTAMP : "TimeStamp">
+    |   <MAX_RUN_TIME : "MaxRunTime">
+    |   <FUNCS : "#Functions">
+    |   <SYMBOLIC : "symbolic">
+    |   <SYSTEM : "#System">
+    |   <WITHDRAW_OPTION : "WithdrawOption">
+    |   <TRUE : "true">
+    |   <FALSE : "false">
+    |   <GEN_SYS : "GenerateSystem = True">
+    |   <GEN_SYS_F_R_S : "GenerateSystemForRepeatSection=">
+    |   <INTRUDER_INFO : "#Intruder Information">
+    |   <INTRUDER : "Intruder">
+    |   <INTRUDER_KNOWLEDGE : "IntruderKnowledge">
+    |   <INTRUDER_PROCESSES : "IntruderProcesses">
+    |   <UNBOUND_P : "UnboundParallel = True">
+    |   <STALE_KNOWLEDGE : "StaleKnowledge">
+    |   <CRACKABLE : "Crackable">
+    |   <GUESSABLE : "Guessable">
+    |   <CHANNELS : "#Channels">
+    |   <AUTH : "authenticated">
+    |   <SECRET_LOWER : "secret">
+    |   <DIRECT : "direct">
+    |   <C : "C">
+    |   <NF : "NF">
+    |   <NRA : "NRA">
+    |   <NRA_MINUS : "NRA-">
+    |   <NR : "NR">
+    |   <NR_MINUS : "NR-">
+    |   <SESSION : "Session">
+    |   <STREAM : "Stream">
+    |   <INJECTIVE : "injective">
+    |   <SYMMETRIC : "symmetric">
+    |   <SIMP : "#Simplifications">
+    |   <REMOVE_FIELDS : "RemoveFields">
+    |   <REMOVE_HASHED_FIELDS : "RemoveHashedFields">
+    |   <REMOVE_ENCRYPTION : "RemoveEncrytpion">
+    |   <REMOVE_HASH : "RemoveHash">
+    |   <SWAP_PAIRS : "SwapPairs">
+    |   <COALESCE : "Coalesce">
+    |   <REMOVE_PLAIN_AND_ENC : "RemovePlainAndEnc">
+    |   <X : "x">
+}
+
+TOKEN : {
+        <ID : <LETTER> (<LETTER> | <DIGIT>)*>
+    |   <DIGIT : ["0" - "9"]>
+    |   <LETTER : ["a" - "z","A" - "Z"]>
+}
+
+TOKEN : {
+        <XOR : "(+)">
+    |   <ARROW : "->">
+    |   <MOD : "%">
+    |   <EQUALS : "=">
+    |   <PIPE_DASH : "|-">
+    |   <L_PAREN : "(">
+    |   <R_PAREN : ")">
+    |   <L_BRACE : "{">
+    |   <R_BRACE : "}">
+    |   <L_SQUARE : "[">
+    |   <R_SQUARE : "]">
+    |   <LESS_THAN : "<">
+    |   <GREATER_THAN : ">">
+    |   <COMMA : ",">
+    |   <SEMI_COLON : ";">
+   // |   <NEW_LINE : "\n">
+    |   <COLON : ":">
+    |   <DOT : ".">
+    |   <TWO_DOTS : "..">
+    |   <ASSIGNMENT : ":=">
+    |   <UNDERSCORE : "_">
+
+
+
+}
+// CATCH ANYTHING ELSE
+TOKEN : {
+    <OTHER : ~[]>
+}
+
+// Grammar Prod Rules
+
+// Basic Def
+
+ArrayList<String> atom() : {Token t;} {
+    {ArrayList<String> atomValues = new ArrayList<String>(); }
+    t = <ID>{atomValues.add(t.image);} fn_app(atomValues)
+    {return atomValues;}
+}
+
+void fn_app(ArrayList<String> values) : { Token t;} {
+    <L_PAREN>  t = <ID>{values.add(t.image);} (<COMMA> t = <ID> {values.add(t.image);})* <R_PAREN> | {}
+
+}
+
+void msg() : {} {
+        <ID> msgP() msgPP()
+    |   <L_PAREN> msg() <R_PAREN> msgPP()
+    |   <L_BRACE> msg() <R_BRACE> <L_BRACE> atom() <R_BRACE> msgPP()
+}
+
+void msgP() : {} {
+        <L_PAREN> msg() <R_PAREN>
+    |   <MOD> msg()
+    |   {}
+}
+
+void msgPP() : {} {
+        <COMMA> msg() msgPP()
+    |   <MOD> <ID> msgPP()
+    |   <XOR> msg() msgPP()
+    |   {}
+}
+
+void type_name() : {} {
+    <ID>
+}
+
+Token process_name() : {Token t;} {
+    t = <ID>
+    {return t;}
+}
+
+Protocol script() : {Protocol p; Intruder i; Message m;} {
+    {p = new Protocol();}
+    free_vars()
+    processes()
+    prot_desc()
+    spec_section()
+    [equivalences()]
+    actual_vars()
+    [functions()]
+    system()
+    i = intruder()
+    [channels()] // Optional to fit script example
+    <EOF>
+    {p.setIntruder(i);   return p;}
+}
+
+void free_vars() : {} {
+    <FREE_VARS>  (var_dec() | inv_keys_dec())*
+}
+
+void var_dec() : {} {
+    <ID> (<COMMA> <ID>)* <COLON> type_expr() [subtype_expr()] 
+}
+
+void subtype_expr() : {} {
+    <L_SQUARE> <ID> (<COMMA> <ID>)* <R_SQUARE>
+}
+
+void type_expr() : {} {
+    type_name() type_exprP()
+}
+// Left Factoring
+void type_exprP() : {} {
+    (<X> type_name())* <ARROW> type_name() | {}
+}
+
+void inv_keys_dec() : {} {
+    <INVERSE_KEYS> inv_key_pair() (<COMMA> inv_key_pair())* 
+}
+
+void inv_key_pair() : {} {
+    <L_PAREN> <ID> <COMMA> <ID> <R_PAREN>
+}
+
+void processes() : {} {
+    <PROCESSES>  (process_def())*
+}
+
+ProcessModel process_def() : {Token t; ArrayList<String> collector;} {
+    {ProcessModel proc = new ProcessModel(); collector = new ArrayList();}
+    t = process_name() {proc.setName(t.image);} <L_PAREN> t = <ID> {collector.add(t.image);} (<COMMA> t = <ID> {collector.add(t.image);})* <R_PAREN> [knows_stmt()] [gen_stmt()] {System.out.println(collector);}
+    {return proc;}
+}
+
+void knows_stmt() : {} {
+    <KNOWS> atom() (<COMMA> atom())*
+}
+
+void gen_stmt() : {} {
+    <GENERATES> <ID> (<COMMA> <ID>)*
+}
+
+void prot_desc() : {} {
+    <PROT_DESC>  (LOOKAHEAD(3)prot_msg() | LOOKAHEAD(3)env_msg_send() | env_msg_rec())*
+}
+
+void prot_msg() : {} {
+    [assignment_line() ]
+    line_no() <DOT> <ID> <ARROW> <ID> <COLON> msg() 
+    [test_line() ]
+}
+
+void assignment_line() : {} {
+    <LESS_THAN> assignment() (<SEMI_COLON> assignment())* <GREATER_THAN>
+}
+
+void assignment() : {} {
+    <ID> <ASSIGNMENT> fdr_expr()
+}
+
+void test_line() : {} {
+    <L_SQUARE> test() <R_SQUARE>
+}
+
+void test() : {} {
+    fdr_expr()
+}
+
+void fdr_expr() : {} {
+    {}
+}
+
+void env_msg_send() : {} {
+    line_no() <DOT> <ARROW> <ID> <COLON> msg() 
+    [test_line() ]
+}
+
+void env_msg_rec() : {} {
+    [assignment_line() ]
+    line_no() <DOT> <ID> <ARROW> <COLON> msg() 
+}
+
+void line_no() : {} {
+    (<LETTER> | <DIGIT>) (LOOKAHEAD(2)<LETTER> | LOOKAHEAD(2)<DIGIT>)*
+}
+
+void spec_section() : {} {
+    <SPEC>  (spec() | temporal_spec())*
+}
+
+void spec() : {} {
+        <SECRET> <L_PAREN> <ID> <COMMA> atom() <COMMA> agents() <R_PAREN> 
+    |   <STRONG_SECRET> <L_PAREN> <ID> <COMMA> atom() <COMMA> agents() <R_PAREN> 
+    |   <AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <COMMA> fields() <R_PAREN> 
+    |   <N_I_AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <COMMA> fields() 
+    |   <WEAK_AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <R_PAREN> 
+    |   <ALIVENESS> <L_PAREN> <ID> <COMMA> <ID> <R_PAREN> 
+    |   <TIMED_AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <COMMA> time() <COMMA> fields() <R_PAREN> 
+    |   <TIMED_N_I_AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <COMMA> time() <COMMA> fields() <R_PAREN> 
+    |   <TIMED_WEAK_AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <COMMA> time() <R_PAREN> 
+    |   <TIMED_ALIVENESS> <L_PAREN> <ID> <COMMA> <ID> <COMMA> time() <R_PAREN> 
+
+}
+
+void agents() : {} {
+    <L_SQUARE> <ID> (<COMMA> <ID>)* <R_SQUARE>
+}
+
+void fields() : {} {
+    <L_SQUARE> [<ID> (<COMMA> <ID>)*] <R_SQUARE>
+}
+
+// TODO Change to N
+void time() : {} {
+    <DIGIT>
+}
+
+void temporal_spec() : {} {
+    <IF> temporal_formula() <THEN> temporal_formula()
+}
+
+void temporal_formula() : {} {
+        <L_PAREN> temporal_formula() <R_PAREN> temporal_formulaP()
+    |   temporal_event() temporal_formulaP()
+    |   <PREV> temporal_formula() temporal_formulaP()
+}
+
+void temporal_formulaP() : {} {
+        <AND> temporal_formula() temporal_formulaP()
+    |   <OR> temporal_formula() temporal_formulaP()
+    |   {}
+}
+
+void temporal_event() : {} {
+    <ID> (<SENDS> | <RECEIVES>) <MESSAGE>
+    line_no() [(<FROM> | <TO>) <ID>]
+    [<CONTAINING> sub() (<COMMA> sub())]
+}
+
+void sub() : {} {
+    <ID> subP()
+}
+
+void subP() : {} {
+    <FOR> <ID> | {}
+}
+
+void equivalences() : {} {
+    <EQ>  (equiv_dec())*
+}
+
+void equiv_dec() : {} {
+    <FOR_ALL> quants() <DOT> msg() <EQUALS> msg() 
+}
+
+void quants() : {} {
+    quant() (<COMMA> quant())*
+}
+
+void quant() : {} {
+    <ID> (LOOKAHEAD(2)<COMMA> <ID>)* [<COLON> type_name()]
+}
+
+void actual_vars() : {} {
+    <ACTUAL_VARS>  (act_dec())*
+}
+
+void act_dec() : {} {
+        act_var_dec()
+    |   timestamp_def()
+    |   maxruntime_def()
+    |   act_inv_keys_dec()
+}
+
+void act_var_dec() : {} {
+    <ID> (<COMMA> <ID>)* <COLON> type_name() [di_tag()] [subtype_expr()] 
+}
+
+void di_tag() : {} {
+        <EXTERNAL>
+    |   <INTERNAL_KNOWN>
+    |   <INTERNAL_UNKNOWN>
+}
+
+void timestamp_def() : {} {
+    <TIMESTAMP> <EQUALS> time() <TWO_DOTS> time() 
+}
+
+void maxruntime_def() : {} {
+    <MAX_RUN_TIME> <EQUALS> time() 
+}
+
+void act_inv_keys_dec() : {} {
+    <INVERSE_KEYS> act_inv_key_pair() (<COMMA> act_inv_key_pair())*
+}
+
+void act_inv_key_pair() : {} {
+    <L_PAREN> <ID> <COMMA> <ID> <R_PAREN>
+}
+
+void functions() : {} {
+    <FUNCS>  (functions_line())*
+}
+
+void functions_line() : {} {
+        explicit_function_line()
+    |   symbolic_line()
+}
+
+void explicit_function_line() : {} {
+    fn_def_lhs() <EQUALS> <ID> 
+}
+
+void fn_def_lhs() : {} {
+    <ID> <L_PAREN> fn_def_arg() (<COMMA> fn_def_arg())* <R_PAREN>
+}
+
+void fn_def_arg() : {} {
+    <ID> | <UNDERSCORE>
+}
+
+void symbolic_line() : {} {
+    <SYMBOLIC> <ID> (<COMMA> <ID>)* 
+}
+
+void system() : {} {
+    <SYSTEM> (agent_dec())*
+    [withdraw_dec()]
+    [generate_system()]
+}
+
+void agent_dec() : {} {
+    instance_dec() (<SEMI_COLON> instance_dec())* 
+}
+
+void instance_dec() : {} {
+    process_name() <L_PAREN> <ID> (<COMMA> <ID>)* <R_PAREN>
+}
+
+void withdraw_dec() : {} {
+    <WITHDRAW_OPTION> <EQUALS> (<TRUE> | <FALSE>) 
+}
+
+void generate_system() : {} {
+    <GEN_SYS> | <GEN_SYS_F_R_S> line_no() <TO> line_no()
+}
+
+Intruder intruder() : {Token t; String id; ArrayList<String> intuderKnowledge; ArrayList<String> collector;} {
+    {Intruder intruder = new Intruder(); intuderKnowledge = new ArrayList();}
+    <INTRUDER_INFO>
+    <INTRUDER> <EQUALS> t = <ID>{intruder.setId(t.image);}
+    <INTRUDER_KNOWLEDGE> <EQUALS> <L_BRACE> collector = atom(){intuderKnowledge.addAll(collector);} (<COMMA> collector = atom() {intuderKnowledge.addAll(collector);})* <R_BRACE> {intruder.setKnowledge(intuderKnowledge);}
+    [internal_proc_dec()]
+    [stale_knowledge_dec()]
+    [crackable_dec()]
+    [guessable_dec()]
+    [ t = <UNBOUND_P>] {if(t.equals("UnboundParallel = True")) intruder.setUnboundParallel(true);}
+    (deduction())*
+    { return intruder;}
+}
+
+void deduction() : {} {
+    <FOR_ALL> quants() <DOT> msg() (<COMMA> msg())* <PIPE_DASH> msg() 
+}
+
+void internal_proc_dec() : {} {
+    <INTRUDER_PROCESSES> <EQUALS> process_name() (<COMMA> process_name())* 
+}
+
+void stale_knowledge_dec() : {} {
+    <STALE_KNOWLEDGE> <EQUALS> (<TRUE> | <FALSE>) 
+}
+
+void crackable_dec() : {} {
+    <CRACKABLE> <EQUALS> crackable_type() (<COMMA> crackable_type())* 
+}
+
+void crackable_type() : {} {
+    type_name() [<L_PAREN> time() <R_PAREN>]
+}
+
+void guessable_dec() : {} {
+    <GUESSABLE> <EQUALS> type_name() (<COMMA> type_name())* 
+}
+
+void channels() : {} {
+    <CHANNELS>  (old_channel_spec() | channel_spec())*
+}
+
+void old_channel_spec() : {} {
+        <AUTH> 
+    |   <SECRET> 
+    |   <DIRECT> 
+}
+
+void channel_spec() : {} {
+        msg_channel_spec()
+    |   session_channel_spec()
+}
+
+void msg_channel_spec() : {} {
+    line_no() msg_channel_prop()
+}
+
+void msg_channel_prop() : {} {
+    [<C>] [<NF>] [(<NRA> | <NRA_MINUS>)] [(<NR> | <NR_MINUS>)]
+}
+
+void session_channel_spec() : {} {
+    (<SESSION> | <STREAM>) [(<INJECTIVE> | <SYMMETRIC>)] line_no() (<COMMA> line_no())* 
+}
+
+
+

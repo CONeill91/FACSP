@@ -1,0 +1,51 @@
+#Free variables
+A, B : Agent
+na, nb : Nonce
+PK : Agent -> PublicKey
+SK : Agent -> SecretKey
+pks : ServerPublicKey
+sks : ServerSecretKey
+S: Server
+InverseKeys = (PK,SK), (pks, sks)
+
+#Processes
+INITIATOR(A,na,S,pks) knows SK(A)
+RESPONDER(B,nb,S,pks) knows SK(B)
+SERVER(S,sks) knows PK
+
+#Protocol description
+0.    -> A : B
+1.  A -> S : B
+2.  S -> A : {B, PK(B) %  pkb}{sks}
+-- 3.  A -> B : {na, A}{pkb % PK(B)}
+4.  B -> S : A
+5.  S -> B : {A, PK(A) % pka}{sks}
+--6.  B -> A : {na, nb}{pka % PK(A)}
+--7.  A -> B : {nb}{pkb % PK(B)}
+#Specification
+Secret(A, na, [B])
+Secret(B, nb, [A])
+Agreement(A, B, [na,nb])
+Agreement(B, A, [na,nb])
+#Actual variables
+Alice, Bob, Mallory : Agent
+Na, Nb, Nm : Nonce
+PKs : ServerPublicKey
+SKs : ServerSecretKey
+Sam : Server
+InverseKeys = (PKs, SKs)
+
+#Functions
+
+symbolic PK, SK
+
+#System
+
+INITIATOR(Alice, Na, Sam, PKs)
+RESPONDER(Bob, Nb, Sam, PKs)
+SERVER(Sam, SKs)
+
+#Intruder Information
+
+Intruder = Mallory
+IntruderKnowledge = {Alice, Bob, Mallory, Nm, Sam, PK, PKs, SK(Mallory)}
