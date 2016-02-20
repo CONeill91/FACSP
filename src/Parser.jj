@@ -1,5 +1,6 @@
 options{
     IGNORE_CASE = false;
+    //DEBUG_PARSER = true;
 }
 
 // ** SECTION 2 - USER CODE **
@@ -143,7 +144,8 @@ TOKEN : // KEYWORDS
 }
 
 TOKEN : {
-        <ID : <LETTER> (<LETTER> | <DIGIT>)*>
+        <LINE_NO : <DIGIT> (<LETTER> | <DIGIT>)*>
+    |   <ID : <LETTER> (<LETTER> | <DIGIT>)*>
     |   <DIGIT : ["0" - "9"]>
     |   <LETTER : ["a" - "z","A" - "Z"]>
 }
@@ -153,6 +155,7 @@ TOKEN : {
     |   <ARROW : "->">
     |   <MOD : "%">
     |   <EQUALS : "=">
+    |   <NOT_EQUAL: "!=">
     |   <PIPE_DASH : "|-">
     |   <L_PAREN : "(">
     |   <R_PAREN : ")">
@@ -183,38 +186,42 @@ TOKEN : {
 
 // Basic Def
 
-ArrayList<String> atom() : {Token t;} {
-    {ArrayList<String> atomValues = new ArrayList<String>(); }
-    t = <ID>{atomValues.add(t.image);} fn_app(atomValues)
-    {return atomValues;}
+void atom() : {} {
+     LOOKAHEAD(2)fn_app() | <ID>
 }
 
-void fn_app(ArrayList<String> values) : { Token t;} {
-    <L_PAREN>  t = <ID>{values.add(t.image);} (<COMMA> t = <ID> {values.add(t.image);})* <R_PAREN> | {}
+void fn_app() : {} {
+    <ID> <L_PAREN> <ID> (<COMMA> <ID>)* <R_PAREN>
 
 }
 
-void msg() : {} {
-        <ID> msgP() msgPP()
-    |   <L_PAREN> msg() <R_PAREN> msgPP()
-    |   <L_BRACE> msg() <R_BRACE> <L_BRACE> atom() <R_BRACE> msgPP()
+void msg() : {Token t;} {
+    {for (Token a = getNextToken(); a.kind!=EOF; a = getNextToken()) {
+        System.out.println(a.image);
+    }}
+    {ArrayList<String> msgValues = new ArrayList();}
+    cpt(msgValues) (LOOKAHEAD(2) t = <COMMA>{msgValues.add(t.image);} cpt(msgValues))*
+    //{System.out.println(msgValues);}
+
 }
 
-void msgP() : {} {
-        <L_PAREN> msg() <R_PAREN>
-    |   <MOD> msg()
-    |   {}
+void cpt(ArrayList<String> msgValues) : {Token t;} {
+        LOOKAHEAD(2) t = <ID> {msgValues.add(t.image);} t = <MOD>{ msgValues.add(t.image);} term(msgValues)
+     |  term(msgValues) [t = <MOD>{ msgValues.add(t.image);} msgAtom(msgValues)]
 }
 
-void msgPP() : {} {
-        <COMMA> msg() msgPP()
-    |   <MOD> <ID> msgPP()
-    |   <XOR> msg() msgPP()
-    |   {}
+void term(ArrayList<String> msgValues) : {Token t;} {
+    msgAtom(msgValues) [ t = <XOR> {msgValues.add(t.image);} term(msgValues)]
 }
 
-void type_name() : {} {
-    <ID>
+void msgAtom(ArrayList<String> msgValues) : {Token t; ;} {
+        t = <ID> {msgValues.add(t.image);} [ t = <L_PAREN> {msgValues.add(t.image);} msg() t = <R_PAREN> {msgValues.add(t.image);}]
+    |   t = <L_BRACE>{ msgValues.add(t.image);} msg() t = <R_BRACE> { msgValues.add(t.image);}  t = <L_BRACE> { msgValues.add(t.image);} cpt(msgValues) t = <R_BRACE> {msgValues.add(t.image);}
+    |   t = <L_PAREN> { msgValues.add(t.image);} msg() t = <R_PAREN> { msgValues.add(t.image);}
+}
+ Token type_name() : {Token t;} {
+    t = <ID>
+    {return t;}
 }
 
 Token process_name() : {Token t;} {
@@ -243,7 +250,7 @@ void free_vars() : {} {
 }
 
 void var_dec() : {} {
-    <ID> (<COMMA> <ID>)* <COLON> type_expr() [subtype_expr()] 
+    <ID> (<COMMA> <ID>)* <COLON> (type_expr() | <TIMESTAMP>) [subtype_expr()]
 }
 
 void subtype_expr() : {} {
@@ -251,11 +258,7 @@ void subtype_expr() : {} {
 }
 
 void type_expr() : {} {
-    type_name() type_exprP()
-}
-// Left Factoring
-void type_exprP() : {} {
-    (<X> type_name())* <ARROW> type_name() | {}
+    type_name() [(<X> type_name())* <ARROW> type_name()]
 }
 
 void inv_keys_dec() : {} {
@@ -270,10 +273,9 @@ void processes() : {} {
     <PROCESSES>  (process_def())*
 }
 
-ProcessModel process_def() : {Token t; ArrayList<String> collector;} {
-    {ProcessModel proc = new ProcessModel(); collector = new ArrayList();}
-    t = process_name() {proc.setName(t.image);} <L_PAREN> t = <ID> {collector.add(t.image);} (<COMMA> t = <ID> {collector.add(t.image);})* <R_PAREN> [knows_stmt()] [gen_stmt()] {System.out.println(collector);}
-    {return proc;}
+void process_def() : {} {
+   process_name() <L_PAREN> <ID> (<COMMA> <ID> )* <R_PAREN> [knows_stmt()] [gen_stmt()]
+
 }
 
 void knows_stmt() : {} {
@@ -289,8 +291,9 @@ void prot_desc() : {} {
 }
 
 void prot_msg() : {} {
+
     [assignment_line() ]
-    line_no() <DOT> <ID> <ARROW> <ID> <COLON> msg() 
+    <LINE_NO> <DOT> <ID> <ARROW> <ID> <COLON>  msg()
     [test_line() ]
 }
 
@@ -311,21 +314,17 @@ void test() : {} {
 }
 
 void fdr_expr() : {} {
-    {}
+    (<LETTER>)+ (<NOT_EQUAL>) (<LETTER>)+
 }
 
 void env_msg_send() : {} {
-    line_no() <DOT> <ARROW> <ID> <COLON> msg() 
+    <LINE_NO> <DOT> <ARROW> <ID> <COLON> msg()
     [test_line() ]
 }
 
 void env_msg_rec() : {} {
     [assignment_line() ]
-    line_no() <DOT> <ID> <ARROW> <COLON> msg() 
-}
-
-void line_no() : {} {
-    (<LETTER> | <DIGIT>) (LOOKAHEAD(2)<LETTER> | LOOKAHEAD(2)<DIGIT>)*
+    <LINE_NO> <DOT> <ID> <ARROW> <COLON> msg()
 }
 
 void spec_section() : {} {
@@ -377,7 +376,7 @@ void temporal_formulaP() : {} {
 
 void temporal_event() : {} {
     <ID> (<SENDS> | <RECEIVES>) <MESSAGE>
-    line_no() [(<FROM> | <TO>) <ID>]
+    <LINE_NO> [(<FROM> | <TO>) <ID>]
     [<CONTAINING> sub() (<COMMA> sub())]
 }
 
@@ -486,14 +485,14 @@ void withdraw_dec() : {} {
 }
 
 void generate_system() : {} {
-    <GEN_SYS> | <GEN_SYS_F_R_S> line_no() <TO> line_no()
+    <GEN_SYS> | <GEN_SYS_F_R_S> <LINE_NO> <TO> <LINE_NO>
 }
 
 Intruder intruder() : {Token t; String id; ArrayList<String> intuderKnowledge; ArrayList<String> collector;} {
     {Intruder intruder = new Intruder(); intuderKnowledge = new ArrayList();}
     <INTRUDER_INFO>
     <INTRUDER> <EQUALS> t = <ID>{intruder.setId(t.image);}
-    <INTRUDER_KNOWLEDGE> <EQUALS> <L_BRACE> collector = atom(){intuderKnowledge.addAll(collector);} (<COMMA> collector = atom() {intuderKnowledge.addAll(collector);})* <R_BRACE> {intruder.setKnowledge(intuderKnowledge);}
+    <INTRUDER_KNOWLEDGE> <EQUALS> <L_BRACE> atom()(<COMMA> atom())* <R_BRACE>
     [internal_proc_dec()]
     [stale_knowledge_dec()]
     [crackable_dec()]
@@ -543,7 +542,7 @@ void channel_spec() : {} {
 }
 
 void msg_channel_spec() : {} {
-    line_no() msg_channel_prop()
+    <LINE_NO> msg_channel_prop()
 }
 
 void msg_channel_prop() : {} {
@@ -551,7 +550,7 @@ void msg_channel_prop() : {} {
 }
 
 void session_channel_spec() : {} {
-    (<SESSION> | <STREAM>) [(<INJECTIVE> | <SYMMETRIC>)] line_no() (<COMMA> line_no())* 
+    (<SESSION> | <STREAM>) [(<INJECTIVE> | <SYMMETRIC>)] <LINE_NO> (<COMMA> <LINE_NO>)*
 }
 
 

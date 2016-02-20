@@ -163,53 +163,57 @@ public interface CasperParserConstants {
   /** RegularExpression Id. */
   int X = 82;
   /** RegularExpression Id. */
-  int ID = 83;
+  int LINE_NO = 83;
   /** RegularExpression Id. */
-  int DIGIT = 84;
+  int ID = 84;
   /** RegularExpression Id. */
-  int LETTER = 85;
+  int DIGIT = 85;
   /** RegularExpression Id. */
-  int XOR = 86;
+  int LETTER = 86;
   /** RegularExpression Id. */
-  int ARROW = 87;
+  int XOR = 87;
   /** RegularExpression Id. */
-  int MOD = 88;
+  int ARROW = 88;
   /** RegularExpression Id. */
-  int EQUALS = 89;
+  int MOD = 89;
   /** RegularExpression Id. */
-  int PIPE_DASH = 90;
+  int EQUALS = 90;
   /** RegularExpression Id. */
-  int L_PAREN = 91;
+  int NOT_EQUAL = 91;
   /** RegularExpression Id. */
-  int R_PAREN = 92;
+  int PIPE_DASH = 92;
   /** RegularExpression Id. */
-  int L_BRACE = 93;
+  int L_PAREN = 93;
   /** RegularExpression Id. */
-  int R_BRACE = 94;
+  int R_PAREN = 94;
   /** RegularExpression Id. */
-  int L_SQUARE = 95;
+  int L_BRACE = 95;
   /** RegularExpression Id. */
-  int R_SQUARE = 96;
+  int R_BRACE = 96;
   /** RegularExpression Id. */
-  int LESS_THAN = 97;
+  int L_SQUARE = 97;
   /** RegularExpression Id. */
-  int GREATER_THAN = 98;
+  int R_SQUARE = 98;
   /** RegularExpression Id. */
-  int COMMA = 99;
+  int LESS_THAN = 99;
   /** RegularExpression Id. */
-  int SEMI_COLON = 100;
+  int GREATER_THAN = 100;
   /** RegularExpression Id. */
-  int COLON = 101;
+  int COMMA = 101;
   /** RegularExpression Id. */
-  int DOT = 102;
+  int SEMI_COLON = 102;
   /** RegularExpression Id. */
-  int TWO_DOTS = 103;
+  int COLON = 103;
   /** RegularExpression Id. */
-  int ASSIGNMENT = 104;
+  int DOT = 104;
   /** RegularExpression Id. */
-  int UNDERSCORE = 105;
+  int TWO_DOTS = 105;
   /** RegularExpression Id. */
-  int OTHER = 106;
+  int ASSIGNMENT = 106;
+  /** RegularExpression Id. */
+  int UNDERSCORE = 107;
+  /** RegularExpression Id. */
+  int OTHER = 108;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -299,6 +303,7 @@ public interface CasperParserConstants {
     "\"Coalesce\"",
     "\"RemovePlainAndEnc\"",
     "\"x\"",
+    "<LINE_NO>",
     "<ID>",
     "<DIGIT>",
     "<LETTER>",
@@ -306,6 +311,7 @@ public interface CasperParserConstants {
     "\"->\"",
     "\"%\"",
     "\"=\"",
+    "\"!=\"",
     "\"|-\"",
     "\"(\"",
     "\")\"",

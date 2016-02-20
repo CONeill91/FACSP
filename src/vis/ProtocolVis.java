@@ -1,30 +1,45 @@
 package vis;
 
+import model.Message;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Created by Conor on 18/02/2016.
  * Class to visualize the data being passed in a protocol
  */
 public class ProtocolVis extends JFrame {
-    private Color color = (Color.BLACK);
-    private JPanel jPanel;
+
+
 
     public ProtocolVis() {
         super("Protocol Title");
-        jPanel = new JPanel();
-        jPanel.setBackground(color);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setBackground(Color.BLACK);
+        setContentPane(new ProtocolPanel());
         setVisible(true);
-        add(jPanel,BorderLayout.CENTER);
-        setSize(425,120);
+        setSize(500,500);
+
     }
 
+    class ProtocolPanel extends JPanel {
+        private ArrayList<Message> messageList;
+
+        public void paintComponent(Graphics g){
+            float f=25.0f; // font size.
+            g.setFont(g.getFont().deriveFont(f));
+
+            g.setColor(Color.RED);
+            g.drawString("A", 50, 50);
+            g.drawString("B",450,50);
 
 
-    public static void main(String [] args){
-        ProtocolVis vis = new ProtocolVis();
-        vis.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        }
+
+
     }
+
 
 }
