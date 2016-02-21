@@ -30,17 +30,25 @@ public class Application {
         }
 
         try{
-            Protocol p = parser.script();
-            System.out.println(p.getIntruder().getId());
+
+            Protocol protocol = parser.script();
+            protocol.setTitle(args[0]);
+            System.out.println(protocol.getIntruder());
+            System.out.println();
+            System.out.println(protocol.getMessageList());
+
+            PotGenerator potGenerator = new PotGenerator();
+            potGenerator.genPotFile(protocol);
+
+            // Create new Window
+           // new ProtocolVis(protocol);
+
         }
         catch(ParseException e){
             System.out.print(e.getMessage());
         }
 
-        PotGenerator potGenerator = new PotGenerator();
-        potGenerator.genPotFile();
-        // Create new Window
-        //new ProtocolVis();
+
 
     }
 }

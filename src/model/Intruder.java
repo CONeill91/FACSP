@@ -82,8 +82,18 @@ public class Intruder {
         this.guessable = guessable;
     }
 
-
-
+    @Override
+    public String toString() {
+        return "Intruder{" +
+                "id='" + id + '\'' +
+                ", staleKnowledge=" + staleKnowledge +
+                ", unboundParallel=" + unboundParallel +
+                ", knowledge=" + knowledge +
+                ", processes=" + processes +
+                ", crackable=" + crackable +
+                ", guessable=" + guessable +
+                '}';
+    }
 }
 
 

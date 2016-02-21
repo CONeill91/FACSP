@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Protocol {
     private String Title;
     private Intruder intruder;
-    private ArrayList<Message> messages;
+    private MessageList messageList;
     private ArrayList<Process> processes;
 
     public String getTitle() {
@@ -28,12 +28,12 @@ public class Protocol {
         this.intruder = intruder;
     }
 
-    public ArrayList<Message> getMessages() {
-        return messages;
+    public MessageList getMessageList() {
+        return messageList;
     }
 
-    public void setMessages(ArrayList<Message> messages) {
-        this.messages = messages;
+    public void setMessageList(MessageList messageList) {
+        this.messageList = messageList;
     }
 
     public ArrayList<Process> getProcesses() {

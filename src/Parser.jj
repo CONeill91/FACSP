@@ -35,13 +35,21 @@ public class CasperParser {
 
         try{
             Protocol p = parser.script();
-            System.out.println(p.getIntruder().getId());
+
         }
         catch(ParseException e){
             System.out.print(e.getMessage());
         }
 
       
+    }
+
+    public static String stringify(ArrayList<String> values){
+        StringBuilder builder = new StringBuilder();
+        for(String str: values){
+            builder.append(str);
+        }
+        return builder.toString();
     }
 }
 
@@ -167,7 +175,6 @@ TOKEN : {
     |   <GREATER_THAN : ">">
     |   <COMMA : ",">
     |   <SEMI_COLON : ";">
-   // |   <NEW_LINE : "\n">
     |   <COLON : ":">
     |   <DOT : ".">
     |   <TWO_DOTS : "..">
@@ -186,22 +193,19 @@ TOKEN : {
 
 // Basic Def
 
-void atom() : {} {
-     LOOKAHEAD(2)fn_app() | <ID>
+ArrayList<String> atom() : {Token t; ArrayList<String> atomValues = new ArrayList();} {
+        LOOKAHEAD(2)fn_app(atomValues) {return atomValues;}
+     |  t = <ID> {atomValues.add(t.image);    return atomValues;}
 }
 
-void fn_app() : {} {
-    <ID> <L_PAREN> <ID> (<COMMA> <ID>)* <R_PAREN>
+void fn_app(ArrayList<String> values) : {Token t;StringBuilder tmp = new StringBuilder();} {
+    t = <ID> {tmp.append(t.image);} t = <L_PAREN> {tmp.append(t.image);} t = <ID> {tmp.append(t.image);} (t = <COMMA> {tmp.append(t.image);} t = <ID> {tmp.append(t.image);})* t = <R_PAREN> {tmp.append(t.image); values.add(tmp.toString());}
 
 }
 
-void msg() : {Token t;} {
-    {for (Token a = getNextToken(); a.kind!=EOF; a = getNextToken()) {
-        System.out.println(a.image);
-    }}
-    {ArrayList<String> msgValues = new ArrayList();}
+ArrayList<String> msg() : {Token t; ArrayList<String> msgValues = new ArrayList();} {
     cpt(msgValues) (LOOKAHEAD(2) t = <COMMA>{msgValues.add(t.image);} cpt(msgValues))*
-    //{System.out.println(msgValues);}
+    {return msgValues;}
 
 }
 
@@ -214,10 +218,10 @@ void term(ArrayList<String> msgValues) : {Token t;} {
     msgAtom(msgValues) [ t = <XOR> {msgValues.add(t.image);} term(msgValues)]
 }
 
-void msgAtom(ArrayList<String> msgValues) : {Token t; ;} {
-        t = <ID> {msgValues.add(t.image);} [ t = <L_PAREN> {msgValues.add(t.image);} msg() t = <R_PAREN> {msgValues.add(t.image);}]
-    |   t = <L_BRACE>{ msgValues.add(t.image);} msg() t = <R_BRACE> { msgValues.add(t.image);}  t = <L_BRACE> { msgValues.add(t.image);} cpt(msgValues) t = <R_BRACE> {msgValues.add(t.image);}
-    |   t = <L_PAREN> { msgValues.add(t.image);} msg() t = <R_PAREN> { msgValues.add(t.image);}
+void msgAtom(ArrayList<String> msgValues) : {Token t; ArrayList<String> collector = new ArrayList(); StringBuilder tmp = new StringBuilder();} {
+        t = <ID> {msgValues.add(t.image);} [ t = <L_PAREN> {msgValues.add(t.image);} collector = msg() {msgValues.addAll(collector);} t = <R_PAREN> {msgValues.add(t.image);}]
+    |   t = <L_BRACE>{ msgValues.add(t.image);} collector = msg() {msgValues.addAll(collector);} t = <R_BRACE> { msgValues.add(t.image);}  t = <L_BRACE> { msgValues.add(t.image);} cpt(msgValues) t = <R_BRACE> {msgValues.add(t.image);}
+    |   t = <L_PAREN> { msgValues.add(t.image);} collector = msg() {msgValues.addAll(collector);} t = <R_PAREN> { msgValues.add(t.image);}
 }
  Token type_name() : {Token t;} {
     t = <ID>
@@ -229,11 +233,10 @@ Token process_name() : {Token t;} {
     {return t;}
 }
 
-Protocol script() : {Protocol p; Intruder i; Message m;} {
-    {p = new Protocol();}
+Protocol script() : {Protocol p = new Protocol(); Intruder i; MessageList m = new MessageList(); ArrayList<String> msgStrings = new ArrayList();} {
     free_vars()
     processes()
-    prot_desc()
+    msgStrings = prot_desc() {m.setMessages(msgStrings);}
     spec_section()
     [equivalences()]
     actual_vars()
@@ -242,7 +245,7 @@ Protocol script() : {Protocol p; Intruder i; Message m;} {
     i = intruder()
     [channels()] // Optional to fit script example
     <EOF>
-    {p.setIntruder(i);   return p;}
+    {p.setIntruder(i);  p.setMessageList(m);   return p;}
 }
 
 void free_vars() : {} {
@@ -273,8 +276,8 @@ void processes() : {} {
     <PROCESSES>  (process_def())*
 }
 
-void process_def() : {} {
-   process_name() <L_PAREN> <ID> (<COMMA> <ID> )* <R_PAREN> [knows_stmt()] [gen_stmt()]
+void process_def() : {Token t;} {
+    process_name() <L_PAREN> <ID> (<COMMA> <ID> )* <R_PAREN> [knows_stmt()] [gen_stmt()]
 
 }
 
@@ -286,15 +289,17 @@ void gen_stmt() : {} {
     <GENERATES> <ID> (<COMMA> <ID>)*
 }
 
-void prot_desc() : {} {
-    <PROT_DESC>  (LOOKAHEAD(3)prot_msg() | LOOKAHEAD(3)env_msg_send() | env_msg_rec())*
+ArrayList<String> prot_desc() : {ArrayList<String> msgStrings = new ArrayList(); ArrayList<String> collector = new ArrayList();} {
+        <PROT_DESC>  (LOOKAHEAD(3) collector = prot_msg() {msgStrings.add(stringify(collector));}
+    |   LOOKAHEAD(3)collector = env_msg_send() {msgStrings.add(stringify(collector));}
+    |  collector = env_msg_rec() {msgStrings.add(stringify(collector));} )* {return msgStrings;}
 }
 
-void prot_msg() : {} {
-
+ArrayList<String> prot_msg() : {ArrayList<String> msgValues = new ArrayList();} {
     [assignment_line() ]
-    <LINE_NO> <DOT> <ID> <ARROW> <ID> <COLON>  msg()
+    <LINE_NO> <DOT> <ID> <ARROW> <ID> <COLON>  msgValues = msg()
     [test_line() ]
+    {return msgValues;}
 }
 
 void assignment_line() : {} {
@@ -317,14 +322,16 @@ void fdr_expr() : {} {
     (<LETTER>)+ (<NOT_EQUAL>) (<LETTER>)+
 }
 
-void env_msg_send() : {} {
-    <LINE_NO> <DOT> <ARROW> <ID> <COLON> msg()
+ArrayList<String> env_msg_send() : {ArrayList<String> msgValues = new ArrayList();} {
+    <LINE_NO> <DOT> <ARROW> <ID> <COLON> msgValues = msg()
     [test_line() ]
+    {return msgValues;}
 }
 
-void env_msg_rec() : {} {
+ArrayList<String> env_msg_rec() : {ArrayList<String> msgValues = new ArrayList();} {
     [assignment_line() ]
-    <LINE_NO> <DOT> <ID> <ARROW> <COLON> msg()
+    <LINE_NO> <DOT> <ID> <ARROW> <COLON> msgValues = msg()
+    {return msgValues;}
 }
 
 void spec_section() : {} {
@@ -488,16 +495,19 @@ void generate_system() : {} {
     <GEN_SYS> | <GEN_SYS_F_R_S> <LINE_NO> <TO> <LINE_NO>
 }
 
-Intruder intruder() : {Token t; String id; ArrayList<String> intuderKnowledge; ArrayList<String> collector;} {
-    {Intruder intruder = new Intruder(); intuderKnowledge = new ArrayList();}
+Intruder intruder() : {Token t; Token t1;
+    Intruder intruder = new Intruder();
+    ArrayList<String> intruderKnowledge = new ArrayList();
+    ArrayList<String> collector = new ArrayList();} {
+
     <INTRUDER_INFO>
     <INTRUDER> <EQUALS> t = <ID>{intruder.setId(t.image);}
-    <INTRUDER_KNOWLEDGE> <EQUALS> <L_BRACE> atom()(<COMMA> atom())* <R_BRACE>
+    <INTRUDER_KNOWLEDGE> <EQUALS> <L_BRACE> collector = atom(){intruderKnowledge.addAll(collector);}(<COMMA> collector = atom(){intruderKnowledge.addAll(collector);})* <R_BRACE> {intruder.setKnowledge(intruderKnowledge);}
     [internal_proc_dec()]
-    [stale_knowledge_dec()]
+    [t1 = stale_knowledge_dec() {if(t.image.equals("true")) intruder.setStaleKnowledge(true);}]
     [crackable_dec()]
     [guessable_dec()]
-    [ t = <UNBOUND_P>] {if(t.equals("UnboundParallel = True")) intruder.setUnboundParallel(true);}
+    [<UNBOUND_P>]
     (deduction())*
     { return intruder;}
 }
@@ -510,8 +520,8 @@ void internal_proc_dec() : {} {
     <INTRUDER_PROCESSES> <EQUALS> process_name() (<COMMA> process_name())* 
 }
 
-void stale_knowledge_dec() : {} {
-    <STALE_KNOWLEDGE> <EQUALS> (<TRUE> | <FALSE>) 
+Token stale_knowledge_dec() : {Token t;} {
+    <STALE_KNOWLEDGE> <EQUALS> (t = <TRUE> | t = <FALSE>){return t;}
 }
 
 void crackable_dec() : {} {

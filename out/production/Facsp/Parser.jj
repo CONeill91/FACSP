@@ -195,20 +195,20 @@ void fn_app(ArrayList<String> values) : { Token t;} {
 }
 
 void msg() : {} {
-        <ID> msgP() msgPP()
+        <ID> LOOKAHEAD(2)[<L_PAREN> msg() <R_PAREN> | LOOKAHEAD(2)<MOD> msg()] msgPP()
     |   <L_PAREN> msg() <R_PAREN> msgPP()
     |   <L_BRACE> msg() <R_BRACE> <L_BRACE> atom() <R_BRACE> msgPP()
 }
 
-void msgP() : {} {
-        <L_PAREN> msg() <R_PAREN>
-    |   <MOD> msg()
-    |   {}
-}
+//void msgP() : {} {
+//        <L_PAREN> msg() <R_PAREN>
+//    |   <MOD> msg()
+//    |   {}
+//}
 
 void msgPP() : {} {
         <COMMA> msg() msgPP()
-    |   <MOD> <ID> msgPP()
+    |   <MOD> msg() msgPP()
     |   <XOR> msg() msgPP()
     |   {}
 }

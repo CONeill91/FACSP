@@ -1,6 +1,7 @@
 package vis;
 
 import model.Message;
+import model.Protocol;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,8 +15,8 @@ public class ProtocolVis extends JFrame {
 
 
 
-    public ProtocolVis() {
-        super("Protocol Title");
+    public ProtocolVis(Protocol protocol) {
+        super(protocol.getTitle() + " Protocol Steps Visualization");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setBackground(Color.BLACK);
         setContentPane(new ProtocolPanel());
@@ -28,6 +29,8 @@ public class ProtocolVis extends JFrame {
         private ArrayList<Message> messageList;
 
         public void paintComponent(Graphics g){
+            Graphics2D g2D = (Graphics2D) g;
+
             float f=25.0f; // font size.
             g.setFont(g.getFont().deriveFont(f));
 

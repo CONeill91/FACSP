@@ -1,5 +1,7 @@
 package codegen;
 
+import model.Protocol;
+
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -9,11 +11,14 @@ import java.io.UnsupportedEncodingException;
  */
 public class PotGenerator {
 
-    public void genPotFile(){
+    public void genPotFile(Protocol protocol){
         try{
             PrintWriter writer = new PrintWriter("test.pot", "UTF-8");
-            writer.println("The first line");
-            writer.println("The second line");
+            writer.println("-- " + protocol.getTitle());
+            for(int i = 0; i < protocol.getMessageList().getMessages().size(); i++){
+                writer.println(protocol.getMessageList().getMessages().get(i));
+            }
+
             writer.close();
         }
         catch(FileNotFoundException f){
@@ -23,5 +28,18 @@ public class PotGenerator {
             System.out.println("Unsupported File format");
         }
     }
+
+    // Format each msg to make them ready for writing to the .pot file.
+    public static String formatMessage(String msg){
+        if(msg.length() == 1){
+           return msg;
+       }
+
+
+
+        return "";
+    }
+
+
 
 }
