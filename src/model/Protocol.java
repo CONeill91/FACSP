@@ -9,8 +9,8 @@ import java.util.ArrayList;
 public class Protocol {
     private String Title;
     private Intruder intruder;
-    private MessageList messageList;
-    private ArrayList<Process> processes;
+    private ArrayList<Message> messages;
+    private ArrayList<Process_> processes;
 
     public String getTitle() {
         return Title;
@@ -28,22 +28,31 @@ public class Protocol {
         this.intruder = intruder;
     }
 
-    public MessageList getMessageList() {
-        return messageList;
+    public ArrayList<Message> getMessages() {
+        return messages;
     }
 
-    public void setMessageList(MessageList messageList) {
-        this.messageList = messageList;
+    public void setMessages(ArrayList<Message> messages) {
+        this.messages = messages;
     }
 
-    public ArrayList<Process> getProcesses() {
+    public ArrayList<Process_> getProcesses() {
         return processes;
     }
 
-    public void setProcesses(ArrayList<Process> processes) {
+    public void setProcesses(ArrayList<Process_> processes) {
         this.processes = processes;
     }
 
+    @Override
+    public String   toString() {
+        return "Protocol{" +
+                "Title='" + Title + '\'' +
+                ", intruder=" + intruder +
+                ", messages=" + messages +
+                ", processes=" + processes +
+                '}';
+    }
 
     // Whatever we want to parse from a casper script
 }

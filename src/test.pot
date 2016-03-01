@@ -1,9 +1,0 @@
--- NS7.spl~
-B
-B
-{B,PK(B)%pkb}{sks}
-{na,A}{pkb%PK(B)}
-A
-{A,PK(A)%pka}{sks}
-{na,nb}{pka%PK(A)}
-{nb}{pkb%PK(B)}

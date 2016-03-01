@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Created by Conor on 17/02/2016.
  */
-public class ProcessModel {
+public class Process_ {
     private String name;
     private ArrayList<String> params;
     private ArrayList<String> knows;

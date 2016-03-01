@@ -233,10 +233,10 @@ Token process_name() : {Token t;} {
     {return t;}
 }
 
-Protocol script() : {Protocol p = new Protocol(); Intruder i; MessageList m = new MessageList(); ArrayList<String> msgStrings = new ArrayList();} {
+Protocol script() : {Protocol p = new Protocol(); Intruder i; ArrayList<Message> msgs = new ArrayList();} {
     free_vars()
     processes()
-    msgStrings = prot_desc() {m.setMessages(msgStrings);}
+    msgs = prot_desc()
     spec_section()
     [equivalences()]
     actual_vars()
@@ -245,7 +245,7 @@ Protocol script() : {Protocol p = new Protocol(); Intruder i; MessageList m = ne
     i = intruder()
     [channels()] // Optional to fit script example
     <EOF>
-    {p.setIntruder(i);  p.setMessageList(m);   return p;}
+    {p.setIntruder(i);  p.setMessages(msgs);   return p;}
 }
 
 void free_vars() : {} {
@@ -289,17 +289,18 @@ void gen_stmt() : {} {
     <GENERATES> <ID> (<COMMA> <ID>)*
 }
 
-ArrayList<String> prot_desc() : {ArrayList<String> msgStrings = new ArrayList(); ArrayList<String> collector = new ArrayList();} {
-        <PROT_DESC>  (LOOKAHEAD(3) collector = prot_msg() {msgStrings.add(stringify(collector));}
-    |   LOOKAHEAD(3)collector = env_msg_send() {msgStrings.add(stringify(collector));}
-    |  collector = env_msg_rec() {msgStrings.add(stringify(collector));} )* {return msgStrings;}
+ArrayList<Message> prot_desc() : {Message message = new Message(); ArrayList<Message> msglist = new ArrayList();} {
+        <PROT_DESC> (LOOKAHEAD(3) message = prot_msg() {msglist.add(message);}
+    |   LOOKAHEAD(3)message = env_msg_send() {msglist.add(message);}
+    |   message = env_msg_rec() {msglist.add(message);} )*
+    {return msglist;}
 }
 
-ArrayList<String> prot_msg() : {ArrayList<String> msgValues = new ArrayList();} {
+Message prot_msg() : {Token t; Message message = new Message(); ArrayList<String> msgValues = new ArrayList();} {
     [assignment_line() ]
-    <LINE_NO> <DOT> <ID> <ARROW> <ID> <COLON>  msgValues = msg()
+    <LINE_NO> <DOT> t = <ID> {message.setSenderId(t.image);} <ARROW> t = <ID> {message.setReceiverId(t.image);} <COLON>  msgValues = msg()
     [test_line() ]
-    {return msgValues;}
+    {message.setMsgString(stringify(msgValues));    return message;}
 }
 
 void assignment_line() : {} {
@@ -322,16 +323,16 @@ void fdr_expr() : {} {
     (<LETTER>)+ (<NOT_EQUAL>) (<LETTER>)+
 }
 
-ArrayList<String> env_msg_send() : {ArrayList<String> msgValues = new ArrayList();} {
-    <LINE_NO> <DOT> <ARROW> <ID> <COLON> msgValues = msg()
+Message env_msg_send() : {Token t; Message message = new Message(); ArrayList<String> msgValues = new ArrayList();} {
+    <LINE_NO> <DOT> <ARROW> t = <ID> {message.setReceiverId(t.image);} <COLON> msgValues = msg()
     [test_line() ]
-    {return msgValues;}
+    {message.setMsgString(stringify(msgValues)); return message;}
 }
 
-ArrayList<String> env_msg_rec() : {ArrayList<String> msgValues = new ArrayList();} {
+Message env_msg_rec() : {Token t; Message message = new Message(); ArrayList<String> msgValues = new ArrayList();} {
     [assignment_line() ]
-    <LINE_NO> <DOT> <ID> <ARROW> <COLON> msgValues = msg()
-    {return msgValues;}
+    <LINE_NO> <DOT>  t = <ID> {message.setSenderId(t.image);} <ARROW> <COLON> msgValues = msg()
+    {message.setMsgString(stringify(msgValues)); return message;}
 }
 
 void spec_section() : {} {
@@ -342,7 +343,7 @@ void spec() : {} {
         <SECRET> <L_PAREN> <ID> <COMMA> atom() <COMMA> agents() <R_PAREN> 
     |   <STRONG_SECRET> <L_PAREN> <ID> <COMMA> atom() <COMMA> agents() <R_PAREN> 
     |   <AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <COMMA> fields() <R_PAREN> 
-    |   <N_I_AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <COMMA> fields() 
+    |   <N_I_AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <COMMA> fields() <R_PAREN>
     |   <WEAK_AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <R_PAREN> 
     |   <ALIVENESS> <L_PAREN> <ID> <COMMA> <ID> <R_PAREN> 
     |   <TIMED_AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <COMMA> time() <COMMA> fields() <R_PAREN> 
@@ -562,6 +563,7 @@ void msg_channel_prop() : {} {
 void session_channel_spec() : {} {
     (<SESSION> | <STREAM>) [(<INJECTIVE> | <SYMMETRIC>)] <LINE_NO> (<COMMA> <LINE_NO>)*
 }
+
 
 
 

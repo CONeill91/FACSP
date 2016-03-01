@@ -227,11 +227,10 @@ msgValues.add(t.image);
     throw new Error("Missing return statement in function");
   }
 
-  static final public Protocol script() throws ParseException {Protocol p = new Protocol(); Intruder i; MessageList m = new MessageList(); ArrayList<String> msgStrings = new ArrayList();
+  static final public Protocol script() throws ParseException {Protocol p = new Protocol(); Intruder i; ArrayList<Message> msgs = new ArrayList();
     free_vars();
     processes();
-    msgStrings = prot_desc();
-m.setMessages(msgStrings);
+    msgs = prot_desc();
     spec_section();
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case EQ:{
@@ -264,7 +263,7 @@ m.setMessages(msgStrings);
       ;
     }
     jj_consume_token(0);
-p.setIntruder(i);  p.setMessageList(m);   {if ("" != null) return p;}
+p.setIntruder(i);  p.setMessages(msgs);   {if ("" != null) return p;}
     throw new Error("Missing return statement in function");
   }
 
@@ -511,7 +510,7 @@ p.setIntruder(i);  p.setMessageList(m);   {if ("" != null) return p;}
     }
   }
 
-  static final public ArrayList<String> prot_desc() throws ParseException {ArrayList<String> msgStrings = new ArrayList(); ArrayList<String> collector = new ArrayList();
+  static final public ArrayList<Message> prot_desc() throws ParseException {Message message = new Message(); ArrayList<Message> msglist = new ArrayList();
     jj_consume_token(PROT_DESC);
     label_12:
     while (true) {
@@ -526,17 +525,17 @@ p.setIntruder(i);  p.setMessageList(m);   {if ("" != null) return p;}
         break label_12;
       }
       if (jj_2_4(3)) {
-        collector = prot_msg();
-msgStrings.add(stringify(collector));
+        message = prot_msg();
+msglist.add(message);
       } else if (jj_2_5(3)) {
-        collector = env_msg_send();
-msgStrings.add(stringify(collector));
+        message = env_msg_send();
+msglist.add(message);
       } else {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case LINE_NO:
         case LESS_THAN:{
-          collector = env_msg_rec();
-msgStrings.add(stringify(collector));
+          message = env_msg_rec();
+msglist.add(message);
           break;
           }
         default:
@@ -546,11 +545,11 @@ msgStrings.add(stringify(collector));
         }
       }
     }
-{if ("" != null) return msgStrings;}
+{if ("" != null) return msglist;}
     throw new Error("Missing return statement in function");
   }
 
-  static final public ArrayList<String> prot_msg() throws ParseException {ArrayList<String> msgValues = new ArrayList();
+  static final public Message prot_msg() throws ParseException {Token t; Message message = new Message(); ArrayList<String> msgValues = new ArrayList();
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case LESS_THAN:{
       assignment_line();
@@ -562,9 +561,11 @@ msgStrings.add(stringify(collector));
     }
     jj_consume_token(LINE_NO);
     jj_consume_token(DOT);
-    jj_consume_token(ID);
+    t = jj_consume_token(ID);
+message.setSenderId(t.image);
     jj_consume_token(ARROW);
-    jj_consume_token(ID);
+    t = jj_consume_token(ID);
+message.setReceiverId(t.image);
     jj_consume_token(COLON);
     msgValues = msg();
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -576,7 +577,7 @@ msgStrings.add(stringify(collector));
       jj_la1[28] = jj_gen;
       ;
     }
-{if ("" != null) return msgValues;}
+message.setMsgString(stringify(msgValues));    {if ("" != null) return message;}
     throw new Error("Missing return statement in function");
   }
 
@@ -646,11 +647,12 @@ msgStrings.add(stringify(collector));
     }
   }
 
-  static final public ArrayList<String> env_msg_send() throws ParseException {ArrayList<String> msgValues = new ArrayList();
+  static final public Message env_msg_send() throws ParseException {Token t; Message message = new Message(); ArrayList<String> msgValues = new ArrayList();
     jj_consume_token(LINE_NO);
     jj_consume_token(DOT);
     jj_consume_token(ARROW);
-    jj_consume_token(ID);
+    t = jj_consume_token(ID);
+message.setReceiverId(t.image);
     jj_consume_token(COLON);
     msgValues = msg();
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -662,11 +664,11 @@ msgStrings.add(stringify(collector));
       jj_la1[32] = jj_gen;
       ;
     }
-{if ("" != null) return msgValues;}
+message.setMsgString(stringify(msgValues)); {if ("" != null) return message;}
     throw new Error("Missing return statement in function");
   }
 
-  static final public ArrayList<String> env_msg_rec() throws ParseException {ArrayList<String> msgValues = new ArrayList();
+  static final public Message env_msg_rec() throws ParseException {Token t; Message message = new Message(); ArrayList<String> msgValues = new ArrayList();
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case LESS_THAN:{
       assignment_line();
@@ -678,11 +680,12 @@ msgStrings.add(stringify(collector));
     }
     jj_consume_token(LINE_NO);
     jj_consume_token(DOT);
-    jj_consume_token(ID);
+    t = jj_consume_token(ID);
+message.setSenderId(t.image);
     jj_consume_token(ARROW);
     jj_consume_token(COLON);
     msgValues = msg();
-{if ("" != null) return msgValues;}
+message.setMsgString(stringify(msgValues)); {if ("" != null) return message;}
     throw new Error("Missing return statement in function");
   }
 
@@ -778,6 +781,7 @@ msgStrings.add(stringify(collector));
       jj_consume_token(ID);
       jj_consume_token(COMMA);
       fields();
+      jj_consume_token(R_PAREN);
       break;
       }
     case WEAK_AGREEMENT:{
@@ -1927,13 +1931,6 @@ if(t.image.equals("true")) intruder.setStaleKnowledge(true);
     finally { jj_save(5, xla); }
   }
 
-  static private boolean jj_3_6()
- {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_scan_token(ID)) return true;
-    return false;
-  }
-
   static private boolean jj_3R_51()
  {
     if (jj_scan_token(L_PAREN)) return true;
@@ -2003,16 +2000,16 @@ if(t.image.equals("true")) intruder.setStaleKnowledge(true);
     return false;
   }
 
-  static private boolean jj_3_4()
- {
-    if (jj_3R_41()) return true;
-    return false;
-  }
-
   static private boolean jj_3R_48()
  {
     if (jj_scan_token(ID)) return true;
     if (jj_scan_token(ASSIGNMENT)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_4()
+ {
+    if (jj_3R_41()) return true;
     return false;
   }
 
@@ -2064,6 +2061,13 @@ if(t.image.equals("true")) intruder.setStaleKnowledge(true);
     if (jj_scan_token(LINE_NO)) return true;
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(ARROW)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_6()
+ {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_scan_token(ID)) return true;
     return false;
   }
 

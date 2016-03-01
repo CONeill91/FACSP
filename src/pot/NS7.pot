@@ -1,0 +1,16 @@
+-- NS7.spl~
+
+-- Data Structure to model a protocol message: 
+data Msg = Atom String 
+		 | Encrypt String [Msg]
+		 | Sq [Msg]
+		 | Undecryptable String [Msg] String
+		 | Forward String String [Msg]
+
+Msg B []
+{B,PK(B)%pkb}{sks}
+{na,A}{pkb%PK(B)}
+Msg A []
+{A,PK(A)%pka}{sks}
+{na,nb}{pka%PK(A)}
+{nb}{pkb%PK(B)}

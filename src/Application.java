@@ -1,6 +1,7 @@
 import codegen.PotGenerator;
 import model.Protocol;
 import vis.ProtocolVis;
+import vis.Welcome;
 
 import javax.swing.*;
 
@@ -33,15 +34,15 @@ public class Application {
 
             Protocol protocol = parser.script();
             protocol.setTitle(args[0]);
-            System.out.println(protocol.getIntruder());
-            System.out.println();
-            System.out.println(protocol.getMessageList());
+           // System.out.println(protocol);
+
 
             PotGenerator potGenerator = new PotGenerator();
             potGenerator.genPotFile(protocol);
 
             // Create new Window
-           // new ProtocolVis(protocol);
+           //
+            //new ProtocolVis(protocol);
 
         }
         catch(ParseException e){
