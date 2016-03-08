@@ -1,6 +1,6 @@
 options{
     IGNORE_CASE = false;
-    //DEBUG_PARSER = true;
+   // DEBUG_PARSER = true;
 }
 
 // ** SECTION 2 - USER CODE **
@@ -203,25 +203,55 @@ void fn_app(ArrayList<String> values) : {Token t;StringBuilder tmp = new StringB
 
 }
 
-ArrayList<String> msg() : {Token t; ArrayList<String> msgValues = new ArrayList();} {
-    cpt(msgValues) (LOOKAHEAD(2) t = <COMMA>{msgValues.add(t.image);} cpt(msgValues))*
-    {return msgValues;}
-
+Message msg() : {Token t; Message m; MessageList messagelist;} {
+    {messagelist = new MessageList();}
+    m = cpt() {messagelist.getMessageList().add(m);} (LOOKAHEAD(2) t = <COMMA> m = cpt() {messagelist.getMessageList().add(m);})* {
+        if(messagelist.getMessageList().size() == 1){
+            return messagelist.getMessageList().get(0);
+        }
+        return messagelist;
+    }
 }
 
-void cpt(ArrayList<String> msgValues) : {Token t;} {
-        LOOKAHEAD(2) t = <ID> {msgValues.add(t.image);} t = <MOD>{ msgValues.add(t.image);} term(msgValues)
-     |  term(msgValues) [t = <MOD>{ msgValues.add(t.image);} msgAtom(msgValues)]
+Message cpt() : {Token tok = null; Message m = null; Message t;} {
+        LOOKAHEAD(2) tok = <ID> <MOD> t = term() {return new Forward(tok.image, t);}
+     |  t = term() [tok = <MOD> m = msgAtom()] {
+            if(tok == null){
+                return t;
+            }
+            return new Forward(t.toString(),m);
+        }
 }
 
-void term(ArrayList<String> msgValues) : {Token t;} {
-    msgAtom(msgValues) [ t = <XOR> {msgValues.add(t.image);} term(msgValues)]
+Message term() : {Token t = null; Message atomMessage; Message termMessage = null;} {
+    atomMessage = msgAtom() [ t = <XOR> termMessage = term()]   {
+        if(t == null){
+            return atomMessage;
+        }
+        return new Xor(atomMessage,termMessage);
+    }
 }
 
-void msgAtom(ArrayList<String> msgValues) : {Token t; ArrayList<String> collector = new ArrayList(); StringBuilder tmp = new StringBuilder();} {
-        t = <ID> {msgValues.add(t.image);} [ t = <L_PAREN> {msgValues.add(t.image);} collector = msg() {msgValues.addAll(collector);} t = <R_PAREN> {msgValues.add(t.image);}]
-    |   t = <L_BRACE>{ msgValues.add(t.image);} collector = msg() {msgValues.addAll(collector);} t = <R_BRACE> { msgValues.add(t.image);}  t = <L_BRACE> { msgValues.add(t.image);} cpt(msgValues) t = <R_BRACE> {msgValues.add(t.image);}
-    |   t = <L_PAREN> { msgValues.add(t.image);} collector = msg() {msgValues.addAll(collector);} t = <R_PAREN> { msgValues.add(t.image);}
+Message msgAtom() : {Token t; Token t1 = null; Token t2 = null;  Message m = null; Message k;} {
+        t = <ID>  [ t1 = <L_PAREN>  m = msg()  t2 = <R_PAREN> ]{
+            if(t1 == null){
+                return new Atom(t.image);
+            }
+            if (m instanceof Atom){
+                Atom paren = (Atom)m;
+                return new Atom(t.image + t1.image + paren.getVarName() + t2.image );
+            }
+            return new Atom(t.image);
+        }
+
+    |   <L_BRACE> m = msg() <R_BRACE> <L_BRACE> k = cpt() <R_BRACE> {
+        if(m instanceof MessageList){
+            return new Encrypt(k,(MessageList)m);
+        }
+            MessageList msgList = new MessageList();
+            msgList.getMessageList().add(m);
+            return new Encrypt(k,msgList);} // Where key = msg & m = messageList
+    |   t = <L_PAREN>  m = msg()  t = <R_PAREN>  {return m;}
 }
  Token type_name() : {Token t;} {
     t = <ID>
@@ -233,10 +263,10 @@ Token process_name() : {Token t;} {
     {return t;}
 }
 
-Protocol script() : {Protocol p = new Protocol(); Intruder i; ArrayList<Message> msgs = new ArrayList();} {
+Protocol script() : {Protocol p = new Protocol(); Intruder i;} {
     free_vars()
     processes()
-    msgs = prot_desc()
+    prot_desc()
     spec_section()
     [equivalences()]
     actual_vars()
@@ -245,7 +275,7 @@ Protocol script() : {Protocol p = new Protocol(); Intruder i; ArrayList<Message>
     i = intruder()
     [channels()] // Optional to fit script example
     <EOF>
-    {p.setIntruder(i);  p.setMessages(msgs);   return p;}
+    {p.setIntruder(i); return p;}
 }
 
 void free_vars() : {} {
@@ -289,18 +319,18 @@ void gen_stmt() : {} {
     <GENERATES> <ID> (<COMMA> <ID>)*
 }
 
-ArrayList<Message> prot_desc() : {Message message = new Message(); ArrayList<Message> msglist = new ArrayList();} {
-        <PROT_DESC> (LOOKAHEAD(3) message = prot_msg() {msglist.add(message);}
-    |   LOOKAHEAD(3)message = env_msg_send() {msglist.add(message);}
-    |   message = env_msg_rec() {msglist.add(message);} )*
-    {return msglist;}
+void prot_desc() : {} {
+        <PROT_DESC> (LOOKAHEAD(3) prot_msg()
+    |   LOOKAHEAD(3) env_msg_send()
+    |   env_msg_rec() )*
+
 }
 
-Message prot_msg() : {Token t; Message message = new Message(); ArrayList<String> msgValues = new ArrayList();} {
+void prot_msg() : {Token t; Token l; Message m;} {
     [assignment_line() ]
-    <LINE_NO> <DOT> t = <ID> {message.setSenderId(t.image);} <ARROW> t = <ID> {message.setReceiverId(t.image);} <COLON>  msgValues = msg()
+    l = <LINE_NO> <DOT> t = <ID>  <ARROW> t = <ID>  <COLON>  m = msg(){System.out.println(l.image + " " + m);}
     [test_line() ]
-    {message.setMsgString(stringify(msgValues));    return message;}
+
 }
 
 void assignment_line() : {} {
@@ -323,16 +353,16 @@ void fdr_expr() : {} {
     (<LETTER>)+ (<NOT_EQUAL>) (<LETTER>)+
 }
 
-Message env_msg_send() : {Token t; Message message = new Message(); ArrayList<String> msgValues = new ArrayList();} {
-    <LINE_NO> <DOT> <ARROW> t = <ID> {message.setReceiverId(t.image);} <COLON> msgValues = msg()
+void env_msg_send() : {Token t; Message m;} {
+    <LINE_NO> <DOT> <ARROW> t = <ID>  <COLON>  m = msg() {System.out.println(m);}
     [test_line() ]
-    {message.setMsgString(stringify(msgValues)); return message;}
+
 }
 
-Message env_msg_rec() : {Token t; Message message = new Message(); ArrayList<String> msgValues = new ArrayList();} {
+void env_msg_rec() : {Token t; } {
     [assignment_line() ]
-    <LINE_NO> <DOT>  t = <ID> {message.setSenderId(t.image);} <ARROW> <COLON> msgValues = msg()
-    {message.setMsgString(stringify(msgValues)); return message;}
+    <LINE_NO> <DOT>  t = <ID>  <ARROW> <COLON> msg()
+
 }
 
 void spec_section() : {} {

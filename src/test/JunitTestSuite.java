@@ -8,7 +8,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        MessageTest.class, Process_Test.class, ProtocolTest.class,IntruderTest.class
+        Process_Test.class, ProtocolTest.class,IntruderTest.class
 })
 
 public class JunitTestSuite {

@@ -60,10 +60,10 @@ public class ProtocolVis extends JFrame {
 
             for(Message message : messageList) {
                 g.drawString(lineNo + ".", lineNoX, y);
-                g.drawString(message.getSenderId(), senderX, y);
-                g.drawString(message.getMsgString(), messageX, y);
-                g.drawString(message.getReceiverId(), receiverX, y);
-                y += 50;
+//                g.drawString(message.getSenderId(), senderX, y);
+//                g.drawString(message.getMsgString(), messageX, y);
+//                g.drawString(message.getReceiverId(), receiverX, y);
+//                y += 50;
                 lineNo++;
             }
             return y;

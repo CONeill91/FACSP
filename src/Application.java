@@ -1,9 +1,6 @@
-import codegen.PotGenerator;
+import javaCC.CasperParser;
+import javaCC.ParseException;
 import model.Protocol;
-import vis.ProtocolVis;
-import vis.Welcome;
-
-import javax.swing.*;
 
 /**
  * Created by Conor on 19/02/2016.
@@ -37,8 +34,8 @@ public class Application {
            // System.out.println(protocol);
 
 
-            PotGenerator potGenerator = new PotGenerator();
-            potGenerator.genPotFile(protocol);
+//            PotGenerator potGenerator = new PotGenerator();
+//            potGenerator.genPotFile(protocol);
 
             // Create new Window
            //

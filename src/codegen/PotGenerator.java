@@ -18,7 +18,7 @@ public class PotGenerator {
 
     public void genPotFile(Protocol protocol){
         try{
-            PrintWriter writer = new PrintWriter("pot/" + formatTitle(protocol.getTitle()) + ".pot", "UTF-8");
+            PrintWriter writer = new PrintWriter("pot/" +".pot", "UTF-8");
             writer.println("-- " + protocol.getTitle() + "\n");
             writer.println("-- Data Structure to model a protocol message: ");
             writer.println("data Msg = Atom String \n" + // Atomic value
@@ -28,14 +28,7 @@ public class PotGenerator {
                     "\t\t | Undecryptable String [Msg] String\n" +
                     "\t\t | Forward String String [Msg]\n");
 
-            for(Message message: protocol.getMessages()){
-                if(message.getReceiverId().equals("") | message.getSenderId().equals("")){
-                    continue;
-                }
 
-
-                writer.println(formatMessage(message.getMsgString()));
-            }
 
             writer.close();
         }
@@ -59,17 +52,7 @@ public class PotGenerator {
 
     // {ts, B, kab, {ts, kab, A}{SKey(B)} % enc}{SKey(A)}
 
-    public static String formatTitle(String title){
-        return title.substring(0,title.indexOf(".spl"));
-    }
 
-    public static String formatBraces(String msg){
-        if(!msg.contains("{")){
-            return msg;
-        }
-        return "";
-        //return "Encrypt" + msg.substring(msg.lastIndexOf("{",msg.lastIndexOf()));
-    }
 
 
 
