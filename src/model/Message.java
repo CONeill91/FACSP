@@ -4,14 +4,22 @@ package model;
  * Created by Conor on 22/02/2016.
  */
 public abstract class Message {
-    /*
-    data Msg = Atom VarName
-            |  Encrypt Msg [Msg]
-            |  Sq [Msg]
-            |  Xor Msg Msg
-            |  Undec Msg VarName
-            |  Forwd VarName Msg
-            |  Apply VarName Msg
-*/
+    private String senderId = "";
+    private String receiverId = "";
 
+    public String getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(String sendId) {
+        this.senderId = sendId;
+    }
+
+    public String getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(String receiverId) {
+        this.receiverId = receiverId;
+    }
 }
