@@ -19,13 +19,18 @@ public class EditorPanel extends JPanel {
 
     public EditorPanel(){
         super();
-        setBackground(Color.LIGHT_GRAY);
+        //setBackground(Color.LIGHT_GRAY);
         editor = new JTextArea();
+        JScrollPane scrollPane = new JScrollPane(editor);
+        TextLineNumber tln = new TextLineNumber(editor);
+       // tln.setBackground(Color.LIGHT_GRAY);
+        scrollPane.setRowHeaderView(tln);
+        //editor.setBackground(Color.LIGHT_GRAY);
         editor.setText(CASPER_LAYOUT_GUIDE);
         editor.setVisible(true);
         editor.setEditable(true);
         setLayout(new BorderLayout());
-        add(editor);
+        add(scrollPane);
     }
 
     public JTextArea getEditor() {

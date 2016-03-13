@@ -1,5 +1,7 @@
 package controllers;
 
+import javaCC.CasperParser;
+import javaCC.ParseException;
 import model.Protocol;
 import util.Reader;
 import view.EditorPanel;
@@ -10,10 +12,8 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.awt.event.ActionListener;
+import java.io.*;
 
 /**
  * Created by Conor on 11/03/2016.
@@ -50,9 +50,31 @@ public class PanelController {
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
-
+    // Initialises Editor panel functionality
     public void initEditorFunc(){
         editorPanel.add(initMenuBar(), BorderLayout.NORTH);
+    }
+
+    // Initialises Main panel functionality
+    public void initMainFunc(){
+        mainPanel.getStart().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(filePath.equals("")){
+                    mainPanel.getErrorLabel().setText("Error : No script selected.");
+                    return;
+                }
+                try{
+                    Protocol protocol = parseProtocol();
+                }
+                catch(ParseException p){
+                    mainPanel.getErrorLabel().setText(p.toString());
+                }
+                catch (FileNotFoundException f){
+                    mainPanel.getErrorLabel().setText("File path incorrect");
+                }
+            }
+        });
     }
 
     public JMenuBar initMenuBar(){
@@ -121,7 +143,13 @@ public class PanelController {
             }
         }
     }
+
+    public Protocol parseProtocol() throws ParseException,FileNotFoundException{
+        CasperParser parser = new CasperParser(new java.io.FileInputStream(filePath));
+        Protocol protocol = parser.script();
+        return protocol;
     }
+}
 
 
 

@@ -14,6 +14,8 @@ public class MainPanel extends JPanel {
     private JLabel infoLabel;
     private JLabel errorLabel;
     private JLabel fileLabel;
+    private JButton start;
+    private JButton chooseProtocol;
 
     public MainPanel() {
         super();
@@ -21,17 +23,24 @@ public class MainPanel extends JPanel {
         setLayout(new BorderLayout());
         Font headerFont = new Font("Serif", Font.BOLD, 30);
 
-        headerLabel = new JLabel("Welcome to FACSP",SwingConstants.CENTER);
+        headerLabel = new JLabel("Formal Analysis of Cryptographic Security Protocols (FACSP)",SwingConstants.CENTER);
         headerLabel.setFont(new Font("Serif", Font.BOLD, 30));
-        infoLabel = new JLabel("<html><div style='text-align: center;'>FACSP is a tool to formally analyse network security protocols & verify them with respect to a given security property.</html>");
+        infoLabel = new JLabel("<html><div style='text-align: center;'>FACSP is a tool to formally analyse network security protocols." +
+                "The tool takes, as input, a protocol specified in Casper Syntax. A detailed description of Casper can be found here: http://www.cs.ox.ac.uk/gavin.lowe/Security/Casper/. " +
+                "This script may be edited on the right of the application (A script outline is provided on startup). " +
+                "A visualisation of the protocol steps is generated in the bottom left after the protocol has been analysed." +
+                "The protocol will be analysed with respect to your selected security property and verified." +
+                "The location of any vulnerabilities are also highlighted.</html>");
         infoLabel.setFont(new Font("Serif", Font.BOLD, 20));
 
         // Panel for the buttons
         JPanel buttonPanel = new JPanel();
+        start = new JButton("Start");
+        chooseProtocol = new JButton("Choose Protocol");
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setBackground(Color.LIGHT_GRAY);
-        buttonPanel.add(new JButton("Start"));
-        buttonPanel.add(new JButton("Choose Protocol"));
+        buttonPanel.add(start);
+        buttonPanel.add(chooseProtocol);
 
         add(headerLabel,BorderLayout.NORTH);
         add(infoLabel,BorderLayout.CENTER);
@@ -40,19 +49,27 @@ public class MainPanel extends JPanel {
 
     }
 
-    public JLabel getHeaderLabel() {
-        return headerLabel;
-    }
-
-    public void setHeaderLabel(String text) {
-        this.headerLabel.setText(text);
-    }
-
     public JLabel getInfoLabel() {
         return infoLabel;
     }
 
-    public void setInfoLabel(String text) {
-        this.infoLabel.setText(text);
+    public JLabel getHeaderLabel() {
+        return headerLabel;
+    }
+
+    public JLabel getErrorLabel() {
+        return errorLabel;
+    }
+
+    public JLabel getFileLabel() {
+        return fileLabel;
+    }
+
+    public JButton getStart() {
+        return start;
+    }
+
+    public JButton getChooseProtocol() {
+        return chooseProtocol;
     }
 }

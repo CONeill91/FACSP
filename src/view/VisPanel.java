@@ -12,10 +12,10 @@ public class VisPanel extends JPanel {
     public VisPanel(){
         super();
         setBackground(Color.LIGHT_GRAY);
-        setLayout(new FlowLayout());
-        headerLabel = new JLabel("Protocol Visualisation");
-        headerLabel.setFont(new Font("Serif", Font.BOLD, 20));
-        add(headerLabel);
+        setLayout(new BorderLayout());
+        headerLabel = new JLabel("Protocol Visualiser",SwingConstants.CENTER);
+        headerLabel.setFont(new Font("Serif", Font.BOLD, 30));
+        add(headerLabel,BorderLayout.NORTH);
 
     }
 }
