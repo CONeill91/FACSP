@@ -11,6 +11,7 @@ public class Protocol {
     private Intruder intruder;
     private ArrayList<Message> messages;
     private ArrayList<Process_> processes;
+    private ArrayList<Specification> specifications;
 
     public String getTitle() {
         return Title;
@@ -42,6 +43,14 @@ public class Protocol {
 
     public void setProcesses(ArrayList<Process_> processes) {
         this.processes = processes;
+    }
+
+    public ArrayList<Specification> getSpecifications() {
+        return specifications;
+    }
+
+    public void setSpecifications(ArrayList<Specification> specifications) {
+        this.specifications = specifications;
     }
 
     @Override

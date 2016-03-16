@@ -3,11 +3,13 @@ package controllers;
 import javaCC.CasperParser;
 import javaCC.ParseException;
 import model.Intruder;
+import model.Message;
 import model.Protocol;
 import util.Reader;
 import view.EditorPanel;
 import view.MainPanel;
 import view.VisPanel;
+import view.Visualiser;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -18,6 +20,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.util.ArrayList;
 
 /**
  * Created by Conor on 11/03/2016.
@@ -28,6 +31,7 @@ public class PanelController {
     private VisPanel visPanel;
     private Protocol protocol;
     private String filePath = "";
+    private Visualiser visualiser;
 
 
     public PanelController(MainPanel mainPanel, EditorPanel editorPanel, VisPanel visPanel, Protocol protocol) {
@@ -38,6 +42,8 @@ public class PanelController {
         initEditorFunc();
         initMainFunc();
     }
+
+
 
     // Initialises Editor panel functionality
     public void initEditorFunc() {
@@ -55,7 +61,9 @@ public class PanelController {
                 }
                 try {
                     Protocol protocol = parseProtocol();
-                    // TODO visualise
+                    // TODO initVisualiser(protocol.getMessages());
+
+
                 } catch (ParseException p) {
                     highlightLine(getLineNumberFromParseException(p) - 1);
                     mainPanel.getErrorLabel().setText("Error: Line Number " + getLineNumberFromParseException(p) + ". See editor.");
@@ -149,6 +157,7 @@ public class PanelController {
         try {
             outFile = new BufferedWriter(new FileWriter(fileName));
 
+
             editorPanel.getEditor().write(outFile);   // *** here: ***
             filePath = fileName.getPath();
             mainPanel.getFileLabel().setText("File Selected: " + fileName.getName());
@@ -198,6 +207,13 @@ public class PanelController {
         return Character.getNumericValue(p.toString().charAt(p.toString().indexOf("line") + 5));
     }
 
+    public void initVisualiser(ArrayList<Message> messages){
+        // TODO finish
+//        Visualiser visualiser = new Visualiser(messages);
+//        visualiser.startTimer();
+//
+    }
+
     public Protocol getProtocol() {
         return protocol;
     }
@@ -213,6 +229,7 @@ public class PanelController {
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
+
 
 
 }
