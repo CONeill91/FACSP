@@ -1,6 +1,6 @@
 package view;
 
-import model.Message;
+import model.msg.Message;
 import model.Protocol;
 
 import javax.swing.*;

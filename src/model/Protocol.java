@@ -1,5 +1,8 @@
 package model;
 
+import model.msg.Message;
+import model.spec.Specification;
+
 import java.util.ArrayList;
 
 /**

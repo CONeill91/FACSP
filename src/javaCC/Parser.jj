@@ -7,6 +7,8 @@ options{
 // ** SECTION 2 - USER CODE **
 PARSER_BEGIN(CasperParser)
 package javaCC;
+import model.msg.*;
+import model.spec.*;
 import model.*;
 import java.util.*;
 public class CasperParser {
@@ -195,13 +197,13 @@ TOKEN : {
 
 // Basic Def
 
-ArrayList<String> atom() : {Token t; ArrayList<String> atomValues = new ArrayList();} {
-        LOOKAHEAD(2)fn_app(atomValues) {return atomValues;}
-     |  t = <ID> {atomValues.add(t.image);    return atomValues;}
+String atom() : {Token t; String s; } {
+        LOOKAHEAD(2) s = fn_app() {return s;}
+     |  t = <ID> {return t.image;}
 }
 
-void fn_app(ArrayList<String> values) : {Token t;StringBuilder tmp = new StringBuilder();} {
-    t = <ID> {tmp.append(t.image);} t = <L_PAREN> {tmp.append(t.image);} t = <ID> {tmp.append(t.image);} (t = <COMMA> {tmp.append(t.image);} t = <ID> {tmp.append(t.image);})* t = <R_PAREN> {tmp.append(t.image); values.add(tmp.toString());}
+String fn_app(): { Token t;StringBuilder builder = new StringBuilder();} {
+    t = <ID> {builder.append(t.image);} t = <L_PAREN> {builder.append(t.image);} t = <ID> {builder.append(t.image);} (t = <COMMA> {builder.append(t.image);} t = <ID> {builder.append(t.image);})* t = <R_PAREN> {builder.append(t.image); return builder.toString();}
 
 }
 
@@ -370,35 +372,38 @@ Message env_msg_rec() : {Token t; Message m = null; } {
     {return m;}
 }
 
-void spec_section() : {} {
+void spec_section() : {} { // TODO handle temoral specs
     <SPEC>  (spec() | temporal_spec())*
 }
 
-void spec() : {} {
-        <SECRET> <L_PAREN> <ID> <COMMA> atom() <COMMA> agents() <R_PAREN> 
-    |   <STRONG_SECRET> <L_PAREN> <ID> <COMMA> atom() <COMMA> agents() <R_PAREN> 
-    |   <AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <COMMA> fields() <R_PAREN> 
-    |   <N_I_AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <COMMA> fields() <R_PAREN>
-    |   <WEAK_AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <R_PAREN> 
-    |   <ALIVENESS> <L_PAREN> <ID> <COMMA> <ID> <R_PAREN> 
-    |   <TIMED_AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <COMMA> time() <COMMA> fields() <R_PAREN> 
-    |   <TIMED_N_I_AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <COMMA> time() <COMMA> fields() <R_PAREN> 
-    |   <TIMED_WEAK_AGREEMENT> <L_PAREN> <ID> <COMMA> <ID> <COMMA> time() <R_PAREN> 
-    |   <TIMED_ALIVENESS> <L_PAREN> <ID> <COMMA> <ID> <COMMA> time() <R_PAREN> 
+Specification spec() : {Token t; Token t1; String atom; ArrayList<String> agents; ArrayList fields; int time;} {
+        <SECRET> <L_PAREN> t = <ID> <COMMA> atom = atom() <COMMA> agents = agents() <R_PAREN>{return new Secret(t.image,atom,agents);}
+    |   <STRONG_SECRET> <L_PAREN> t = <ID> <COMMA> atom = atom() <COMMA> agents = agents() <R_PAREN>{return new StrongSecret(t.image,atom,agents);}
+    |   <AGREEMENT> <L_PAREN> t = <ID> <COMMA> t1 = <ID> <COMMA> fields = fields() <R_PAREN> {return new Agreement(t.image,t1.image,fields);}
+    |   <N_I_AGREEMENT> <L_PAREN> t = <ID> <COMMA> t1 = <ID> <COMMA> fields = fields() <R_PAREN> {return new NonInjectiveAgreement(t.image,t1.image,fields);}
+    |   <WEAK_AGREEMENT> <L_PAREN> t = <ID> <COMMA> t1 =<ID> <R_PAREN>{return new WeakAgreement(t.image,t1.image);}
+    |   <ALIVENESS> <L_PAREN> t = <ID> <COMMA> t1 = <ID> <R_PAREN> {return new Aliveness(t.image,t1.image);}
+    |   <TIMED_AGREEMENT> <L_PAREN> t = <ID> <COMMA> t1 = <ID> <COMMA> time = time() <COMMA> fields = fields() <R_PAREN> {return new TimedAgreement(t.image,t1.image,time,fields);}
+    |   <TIMED_N_I_AGREEMENT> <L_PAREN> t = <ID> <COMMA> t1 = <ID> <COMMA> time = time() <COMMA> fields = fields() <R_PAREN> {return new TimedNonInjectiveAgreement(t.image,t1.image, time, fields);}
+    |   <TIMED_WEAK_AGREEMENT> <L_PAREN> t = <ID> <COMMA> t1 = <ID> <COMMA> time = time() <R_PAREN> {return new TimedWeakAgreement(t.image,t1.image, time);}
+    |   <TIMED_ALIVENESS> <L_PAREN> t = <ID> <COMMA> t1 = <ID> <COMMA> time = time() <R_PAREN> {return new TimedAliveness(t.image,t1.image, time);}
 
 }
 
-void agents() : {} {
-    <L_SQUARE> <ID> (<COMMA> <ID>)* <R_SQUARE>
+ArrayList<String> agents() : {Token t;ArrayList<String> agents = new ArrayList();} {
+    <L_SQUARE> t = <ID> {agents.add(t.image);} (<COMMA> t = <ID> {agents.add(t.image);})* <R_SQUARE>
+    {return agents;}
 }
 
-void fields() : {} {
-    <L_SQUARE> [<ID> (<COMMA> <ID>)*] <R_SQUARE>
+ArrayList<String> fields() : {Token t; ArrayList<String> fields = new ArrayList();} {
+    <L_SQUARE> [t = <ID> {fields.add(t.image);} (<COMMA> t = <ID> {fields.add(t.image);})*] <R_SQUARE>
+    {return fields;}
 }
 
 // TODO Change to N
-void time() : {} {
-    <DIGIT>
+int time() : {Token t;} {
+    t = <DIGIT>
+    {return Integer.parseInt(t.image);}
 }
 
 void temporal_spec() : {} {
@@ -531,14 +536,13 @@ void generate_system() : {} {
     <GEN_SYS> | <GEN_SYS_F_R_S> <LINE_NO> <TO> <LINE_NO>
 }
 
-Intruder intruder() : {Token t; Token t1;
+Intruder intruder() : {Token t; Token t1;String s;
     Intruder intruder = new Intruder();
-    ArrayList<String> intruderKnowledge = new ArrayList();
-    ArrayList<String> collector = new ArrayList();} {
+    ArrayList<String> intruderKnowledge = new ArrayList();} {
 
     <INTRUDER_INFO>
     <INTRUDER> <EQUALS> t = <ID>{intruder.setId(t.image);}
-    <INTRUDER_KNOWLEDGE> <EQUALS> <L_BRACE> collector = atom(){intruderKnowledge.addAll(collector);}(<COMMA> collector = atom(){intruderKnowledge.addAll(collector);})* <R_BRACE> {intruder.setKnowledge(intruderKnowledge);}
+    <INTRUDER_KNOWLEDGE> <EQUALS> <L_BRACE>  s =atom() {intruderKnowledge.add(s);}(<COMMA> s = atom() {intruderKnowledge.add(s);})* <R_BRACE> {intruder.setKnowledge(intruderKnowledge);}
     [internal_proc_dec()]
     [t1 = stale_knowledge_dec() {if(t.image.equals("true")) intruder.setStaleKnowledge(true);}]
     [crackable_dec()]

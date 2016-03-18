@@ -16,6 +16,7 @@ public class MainPanel extends JPanel {
     private JLabel fileLabel;
     private JButton start;
     private JButton chooseProtocol;
+    private JButton reset;
 
     public MainPanel() {
         super();
@@ -50,12 +51,14 @@ public class MainPanel extends JPanel {
         JPanel buttonPanel = new JPanel();
         start = new JButton("Start");
         chooseProtocol = new JButton("Choose Protocol");
+        reset = new JButton("Reset");
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setBackground(Color.LIGHT_GRAY);
         buttonPanel.add(start);
         buttonPanel.add(chooseProtocol);
+        buttonPanel.add(reset);
 
-        add(headerLabel,BorderLayout.NORTH);
+        add(headerLabel, BorderLayout.NORTH);
         add(labelPanel,BorderLayout.CENTER);
         add(buttonPanel,BorderLayout.SOUTH);
 
@@ -84,5 +87,9 @@ public class MainPanel extends JPanel {
 
     public JButton getChooseProtocol() {
         return chooseProtocol;
+    }
+
+    public JButton getReset() {
+        return reset;
     }
 }

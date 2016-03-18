@@ -53,7 +53,7 @@ public class ParserTest {
     public void testFnApp() throws ParseException{
         String testInput = "conor(shane)";
         CasperParser c = initCasperParserStringReader(testInput);
-        c.fn_app(new ArrayList<>());
+        c.fn_app();
 
     }
 
@@ -61,7 +61,7 @@ public class ParserTest {
     public void testFnAppFailure() throws ParseException{
         String testInput = "conor(shane";
         CasperParser c = initCasperParserStringReader(testInput);
-        c.fn_app(new ArrayList<>());
+        c.fn_app();
     }
 
     @Test

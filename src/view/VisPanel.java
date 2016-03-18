@@ -16,6 +16,8 @@ public class VisPanel extends JPanel {
     private JButton dec;
     private JPanel visPanel;
 
+
+
     public VisPanel(){
         super();
         setBackground(Color.LIGHT_GRAY);
@@ -26,11 +28,10 @@ public class VisPanel extends JPanel {
         stepLabel.setFont(new Font("Serif", Font.BOLD, 25));
 
         visPanel = new JPanel();
-        Visualiser visualiser = new Visualiser();
         visPanel.setBackground(Color.LIGHT_GRAY);
         visPanel.setLayout(new BorderLayout());
         visPanel.add(stepLabel,BorderLayout.NORTH);
-        visPanel.add(visualiser,BorderLayout.CENTER);
+
 
         JPanel buttonPanel = new JPanel();
         inc = new JButton("Increment protocol step");
@@ -44,6 +45,8 @@ public class VisPanel extends JPanel {
         add(visPanel, BorderLayout.CENTER);
         add(buttonPanel,BorderLayout.SOUTH);
     }
+
+
 
     public JLabel getStepLabel() {
         return stepLabel;
@@ -60,4 +63,6 @@ public class VisPanel extends JPanel {
     public JButton getDec() {
         return dec;
     }
+
+
 }

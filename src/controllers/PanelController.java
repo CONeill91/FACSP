@@ -2,8 +2,7 @@ package controllers;
 
 import javaCC.CasperParser;
 import javaCC.ParseException;
-import model.Intruder;
-import model.Message;
+import model.msg.Message;
 import model.Protocol;
 import util.Reader;
 import view.EditorPanel;
@@ -30,9 +29,7 @@ public class PanelController {
     private EditorPanel editorPanel;
     private VisPanel visPanel;
     private Protocol protocol;
-    private String filePath = "";
-    private Visualiser visualiser;
-
+    private String filePath;
 
     public PanelController(MainPanel mainPanel, EditorPanel editorPanel, VisPanel visPanel, Protocol protocol) {
         this.mainPanel = mainPanel;
@@ -41,9 +38,8 @@ public class PanelController {
         this.protocol = protocol;
         initEditorFunc();
         initMainFunc();
+        this.filePath = "";
     }
-
-
 
     // Initialises Editor panel functionality
     public void initEditorFunc() {
@@ -61,7 +57,7 @@ public class PanelController {
                 }
                 try {
                     Protocol protocol = parseProtocol();
-                    // TODO initVisualiser(protocol.getMessages());
+                    initVisualiser(protocol);
 
 
                 } catch (ParseException p) {
@@ -85,9 +81,16 @@ public class PanelController {
                     File file = chooser.getSelectedFile();
                     editorPanel.getEditor().setText(reader.readFile(file));
                     setFilePath(file.getPath());
-                    mainPanel.getFileLabel().setText("File Selected: " + file.getName());
+                    mainPanel.getFileLabel().setText("Casper Script Selected: " + file.getName());
                     mainPanel.getErrorLabel().setText("<html>Error: None</html>");
                 }
+            }
+        });
+
+        mainPanel.getReset().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                resetUI();
             }
         });
     }
@@ -121,10 +124,11 @@ public class PanelController {
             }
         });
 
+
         JMenuItem reset = new JMenuItem(new AbstractAction("Reset editor") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                refreshEditor();
+                resetEditor();
             }
         });
 
@@ -182,12 +186,6 @@ public class PanelController {
         return protocol;
     }
 
-    // Reset the editor to sample casper outline / reset filepath
-    public void refreshEditor() {
-        editorPanel.getEditor().setText(EditorPanel.CASPER_LAYOUT_GUIDE);
-        setFilePath("");
-        mainPanel.getFileLabel().setText("File Selected: None");
-    }
 
     // Highlight the given line in the editor panel
     public void highlightLine(int lineNo) {
@@ -207,11 +205,31 @@ public class PanelController {
         return Character.getNumericValue(p.toString().charAt(p.toString().indexOf("line") + 5));
     }
 
-    public void initVisualiser(ArrayList<Message> messages){
+    public void initVisualiser(Protocol protocol){
         // TODO finish
-//        Visualiser visualiser = new Visualiser(messages);
-//        visualiser.startTimer();
-//
+        Visualiser visualiser = new Visualiser(protocol);
+        visPanel.getVisualiserPanel().add(visualiser,BorderLayout.CENTER);
+        visPanel.getVisualiserPanel().revalidate();
+        visualiser.startTimer();
+
+    }
+    // Reset the Application
+    public void resetUI(){
+        resetLabels();
+        resetEditor();
+    }
+    // Reset the UI labels
+    public void resetLabels(){
+        mainPanel.getErrorLabel().setText("Error: None");
+        mainPanel.getFileLabel().setText("Casper Script Selected: None");
+        visPanel.getStepLabel().setText("Current Protocol Step: N/A");
+
+    }
+
+    // Reset the editor to sample casper outline / reset filepath
+    public void resetEditor() {
+        editorPanel.getEditor().setText(EditorPanel.CASPER_LAYOUT_GUIDE);
+        setFilePath("");
     }
 
     public Protocol getProtocol() {
@@ -230,7 +248,19 @@ public class PanelController {
         this.filePath = filePath;
     }
 
-
+//    public void incCurrentProtocolStep(){
+//        if (currentProtocolStep == protocol.getMessages().size() - 1){
+//            return;
+//        }
+//        currentProtocolStep++;
+//    }
+//
+//    public void decCurrentProtocolStep(){
+//        if (currentProtocolStep == 0){
+//            return;
+//        }
+//        currentProtocolStep--;
+//    }
 
 }
 
