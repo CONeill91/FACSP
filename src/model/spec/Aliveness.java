@@ -23,4 +23,12 @@ public class Aliveness extends Specification {
     public String getParticipant2() {
         return participant2;
     }
+
+    @Override
+    public String toString() {
+        return "Aliveness{" +
+                "participant1='" + participant1 + '\'' +
+                ", participant2='" + participant2 + '\'' +
+                '}';
+    }
 }

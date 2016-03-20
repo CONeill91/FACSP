@@ -41,58 +41,13 @@ public class PanelController {
         this.filePath = "";
     }
 
+    /*
+    * EditorPanel functions
+    *
+    * */
     // Initialises Editor panel functionality
     public void initEditorFunc() {
         editorPanel.add(initMenuBar(), BorderLayout.NORTH);
-    }
-
-    // Initialises Main panel functionality
-    public void initMainFunc() {
-        mainPanel.getStart().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (filePath.equals("")) {
-                    mainPanel.getErrorLabel().setText("Error : No script selected.");
-                    return;
-                }
-                try {
-                    Protocol protocol = parseProtocol();
-                    initVisualiser(protocol);
-
-
-                } catch (ParseException p) {
-                    highlightLine(getLineNumberFromParseException(p) - 1);
-                    mainPanel.getErrorLabel().setText("Error: Line Number " + getLineNumberFromParseException(p) + ". See editor.");
-                } catch (FileNotFoundException f) {
-                    mainPanel.getErrorLabel().setText("File path incorrect");
-                }
-            }
-        });
-
-        mainPanel.getChooseProtocol().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
-                FileNameExtensionFilter filter = new FileNameExtensionFilter("Casper Scripts (.spl)", "spl", "spl~");
-                chooser.setFileFilter(filter);
-                int option = chooser.showOpenDialog(mainPanel);
-                if (option == JFileChooser.APPROVE_OPTION) {
-                    Reader reader = new Reader();
-                    File file = chooser.getSelectedFile();
-                    editorPanel.getEditor().setText(reader.readFile(file));
-                    setFilePath(file.getPath());
-                    mainPanel.getFileLabel().setText("Casper Script Selected: " + file.getName());
-                    mainPanel.getErrorLabel().setText("<html>Error: None</html>");
-                }
-            }
-        });
-
-        mainPanel.getReset().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                resetUI();
-            }
-        });
     }
 
     // Returns functioning menubar to be added to the editor panel.
@@ -100,22 +55,6 @@ public class PanelController {
         JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("File");
         JMenu edit = new JMenu("Edit");
-
-
-        JMenuItem open = new JMenuItem(new AbstractAction("Open") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
-                FileNameExtensionFilter filter = new FileNameExtensionFilter("Casper Scripts (.spl)", "spl", "spl~");
-                chooser.setFileFilter(filter);
-                int option = chooser.showOpenDialog(editorPanel);
-                if (option == JFileChooser.APPROVE_OPTION) {
-                    Reader reader = new Reader();
-                    File file = chooser.getSelectedFile();
-                    editorPanel.getEditor().setText(reader.readFile(file));
-                }
-            }
-        });
 
         JMenuItem save = new JMenuItem(new AbstractAction("Save & select this script") {
             @Override
@@ -138,7 +77,7 @@ public class PanelController {
                 System.exit(0);
             }
         });
-        file.add(open);
+
         file.add(save);
         file.add(reset);
         file.add(exit);
@@ -179,14 +118,6 @@ public class PanelController {
         }
     }
 
-    // Parser the file whose path is set in filepath
-    public Protocol parseProtocol() throws ParseException, FileNotFoundException {
-        CasperParser parser = new CasperParser(new java.io.FileInputStream(filePath));
-        Protocol protocol = parser.script();
-        return protocol;
-    }
-
-
     // Highlight the given line in the editor panel
     public void highlightLine(int lineNo) {
         Highlighter highlighter = editorPanel.getEditor().getHighlighter();
@@ -205,14 +136,98 @@ public class PanelController {
         return Character.getNumericValue(p.toString().charAt(p.toString().indexOf("line") + 5));
     }
 
+    // Initialises Main panel functionality
+    public void initMainFunc() {
+        mainPanel.getStart().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (filePath.equals("")) {
+                    mainPanel.getErrorLabel().setText("Error : No script selected.");
+                    return;
+                }
+                try {
+                    // Sets protocol private var.
+                    parseProtocol();
+                    initVisualiser(protocol);
+
+
+                } catch (ParseException p) {
+                    highlightLine(getLineNumberFromParseException(p) - 1);
+                    mainPanel.getErrorLabel().setText("Error: Line Number " + getLineNumberFromParseException(p) + ". See editor.");
+                } catch (FileNotFoundException f) {
+                    mainPanel.getErrorLabel().setText("File path incorrect");
+                }
+            }
+        });
+
+        mainPanel.getChooseProtocol().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser chooser = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Casper Scripts (.spl)", "spl", "spl~");
+                chooser.setFileFilter(filter);
+                int option = chooser.showOpenDialog(mainPanel);
+                if (option == JFileChooser.APPROVE_OPTION) {
+                    Reader reader = new Reader();
+                    File file = chooser.getSelectedFile();
+                    editorPanel.getEditor().setText(reader.readFile(file));
+                    setFilePath(file.getPath());
+                    mainPanel.getFileLabel().setText("Casper Script Selected: " + file.getName());
+                    mainPanel.getErrorLabel().setText("<html>Error: None</html>");
+                }
+            }
+        });
+
+        mainPanel.getReset().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                resetUI();
+            }
+        });
+    }
+
+
+
+    // Parser the file whose path is set in filepath
+    public void parseProtocol() throws ParseException, FileNotFoundException {
+        CasperParser parser = new CasperParser(new java.io.FileInputStream(filePath));
+        protocol = parser.script();
+
+    }
+
+
+
+
     public void initVisualiser(Protocol protocol){
         // TODO finish
         Visualiser visualiser = new Visualiser(protocol);
+        visPanel.setVisualiser(visualiser);
+        updateCurrentStepLabel();
         visPanel.getVisualiserPanel().add(visualiser,BorderLayout.CENTER);
         visPanel.getVisualiserPanel().revalidate();
         visualiser.startTimer();
-
+        initVisualiserButtons();
     }
+
+    // Init the inc/dec buttons in Vispanel functionality.
+    public void initVisualiserButtons(){
+        visPanel.getInc().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                incCurrentProtocolStep();
+                updateCurrentStepLabel();
+            }
+        });
+
+        visPanel.getDec().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                decCurrentProtocolStep();
+                updateCurrentStepLabel();
+            }
+        });
+    }
+
     // Reset the Application
     public void resetUI(){
         resetLabels();
@@ -248,19 +263,27 @@ public class PanelController {
         this.filePath = filePath;
     }
 
-//    public void incCurrentProtocolStep(){
-//        if (currentProtocolStep == protocol.getMessages().size() - 1){
-//            return;
-//        }
-//        currentProtocolStep++;
-//    }
-//
-//    public void decCurrentProtocolStep(){
-//        if (currentProtocolStep == 0){
-//            return;
-//        }
-//        currentProtocolStep--;
-//    }
+    public void incCurrentProtocolStep(){
+        if (visPanel.getVisualiser().getCurrentProtocolStep() == protocol.getMessages().size() - 1){
+            return;
+        }
+        int i = visPanel.getVisualiser().getCurrentProtocolStep() + 1;
+        visPanel.getVisualiser().setCurrentProtocolStep(i);
+        visPanel.getVisualiser().resetXPosition();
+    }
+
+    public void decCurrentProtocolStep(){
+        if (visPanel.getVisualiser().getCurrentProtocolStep() == 0){
+            return;
+        }
+        int i = visPanel.getVisualiser().getCurrentProtocolStep() - 1;
+        visPanel.getVisualiser().setCurrentProtocolStep(i);
+        visPanel.getVisualiser().resetXPosition();
+    }
+
+    public void updateCurrentStepLabel(){
+        visPanel.getStepLabel().setText("Current Protocol Step: " + visPanel.getVisualiser().getCurrentProtocolStep());
+    }
 
 }
 

@@ -18,6 +18,7 @@ public class MainPanel extends JPanel {
     private JButton chooseProtocol;
     private JButton reset;
 
+
     public MainPanel() {
         super();
         Font font = new Font("Serif", Font.BOLD, 20);
@@ -32,11 +33,11 @@ public class MainPanel extends JPanel {
         labelPanel.setBackground(Color.LIGHT_GRAY);
 
 
-        infoLabel = new JLabel("<html><div style='text-align: center;'>FACSP is a tool to formally analyse network security protocols." +
-                "The tool takes, as input, a protocol specified in Casper Syntax. A detailed description of Casper can be found here: http://www.cs.ox.ac.uk/gavin.lowe/Security/Casper/. " +
-                "This script may be edited on the right of the application (A script outline is provided on startup). " +
-                "A visualisation of the protocol steps is generated in the bottom left after the protocol has been analysed." +
-                "The protocol will be analysed with respect to your selected security property and verified." +
+        infoLabel = new JLabel("<html><div style='text-align: center;'>FACSP is a tool to formally analyse network security protocols. " +
+                "A protocol should be specified using Casper Syntax. A detailed description of Casper can be found here: http://www.cs.ox.ac.uk/gavin.lowe/Security/Casper/. " +
+                "To ensure the script adheres to Casper's grammar it may be edited using the editor (A script outline is provided on startup). " +
+                "A visualisation of the protocol steps is generated in the bottom left after the protocol has been analysed. " +
+                "The protocol will be analysed with respect to the security properties in the specifications section and verified. " +
                 "The location of any vulnerabilities are also highlighted.</html>");
         infoLabel.setFont(font);
         errorLabel = new JLabel("<html>Error: None</html>",SwingConstants.CENTER);
@@ -63,14 +64,6 @@ public class MainPanel extends JPanel {
         add(buttonPanel,BorderLayout.SOUTH);
 
 
-    }
-
-    public JLabel getInfoLabel() {
-        return infoLabel;
-    }
-
-    public JLabel getHeaderLabel() {
-        return headerLabel;
     }
 
     public JLabel getErrorLabel() {

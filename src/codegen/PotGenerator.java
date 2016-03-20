@@ -13,7 +13,7 @@ public class PotGenerator {
 
     public void genPotFile(Protocol protocol){
         try{
-            PrintWriter writer = new PrintWriter("pot/" +".pot", "UTF-8");
+            PrintWriter writer = new PrintWriter("../pot/" + protocol.getTitle() + ".pot", "UTF-8");
             writer.println("-- " + protocol.getTitle() + "\n");
             writer.println("-- Data Structure to model a protocol message: ");
             writer.println("data Msg = Atom String \n" + // Atomic value

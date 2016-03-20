@@ -267,11 +267,11 @@ Token process_name() : {Token t;} {
     {return t;}
 }
 
-Protocol script() : {Protocol p = new Protocol(); ArrayList<Message> messages = new ArrayList(); Intruder i;} {
+Protocol script() : {Protocol p = new Protocol(); ArrayList<Message> messages = new ArrayList(); ArrayList<Specification> specs = new ArrayList(); Intruder i;} {
     free_vars()
     processes()
     messages = prot_desc()
-    spec_section()
+    specs = spec_section()
     [equivalences()]
     actual_vars()
     [functions()]
@@ -279,7 +279,7 @@ Protocol script() : {Protocol p = new Protocol(); ArrayList<Message> messages = 
     i = intruder()
     [channels()] // Optional to fit script example
     <EOF>
-    {p.setIntruder(i); p.setMessages(messages); return p;}
+    {p.setIntruder(i); p.setMessages(messages); p.setSpecifications(specs); return p;}
 }
 
 void free_vars() : {} {
@@ -372,8 +372,9 @@ Message env_msg_rec() : {Token t; Message m = null; } {
     {return m;}
 }
 
-void spec_section() : {} { // TODO handle temoral specs
-    <SPEC>  (spec() | temporal_spec())*
+ArrayList<Specification> spec_section() : {ArrayList<Specification> specifications = new ArrayList(); Specification s;} { // TODO handle temoral specs
+    <SPEC>  ( s = spec(){specifications.add(s);} | temporal_spec())*
+    {return specifications;}
 }
 
 Specification spec() : {Token t; Token t1; String atom; ArrayList<String> agents; ArrayList fields; int time;} {
@@ -536,20 +537,17 @@ void generate_system() : {} {
     <GEN_SYS> | <GEN_SYS_F_R_S> <LINE_NO> <TO> <LINE_NO>
 }
 
-Intruder intruder() : {Token t; Token t1;String s;
-    Intruder intruder = new Intruder();
-    ArrayList<String> intruderKnowledge = new ArrayList();} {
-
+Intruder intruder() : {Token t; String s; Intruder intruder = new Intruder(); ArrayList<String> intruderKnowledge = new ArrayList();} {
     <INTRUDER_INFO>
-    <INTRUDER> <EQUALS> t = <ID>{intruder.setId(t.image);}
-    <INTRUDER_KNOWLEDGE> <EQUALS> <L_BRACE>  s =atom() {intruderKnowledge.add(s);}(<COMMA> s = atom() {intruderKnowledge.add(s);})* <R_BRACE> {intruder.setKnowledge(intruderKnowledge);}
+    <INTRUDER> <EQUALS> t = <ID> {intruder.setId(t.image);}
+    <INTRUDER_KNOWLEDGE> <EQUALS> <L_BRACE>  s = atom() {intruderKnowledge.add(s);} (<COMMA> s = atom() {intruderKnowledge.add(s);})* <R_BRACE> {intruder.setKnowledge(intruderKnowledge);}
     [internal_proc_dec()]
-    [t1 = stale_knowledge_dec() {if(t.image.equals("true")) intruder.setStaleKnowledge(true);}]
+    [stale_knowledge_dec()]
     [crackable_dec()]
     [guessable_dec()]
     [<UNBOUND_P>]
     (deduction())*
-    { return intruder;}
+    {return intruder;}
 }
 
 void deduction() : {} {

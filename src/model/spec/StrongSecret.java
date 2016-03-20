@@ -29,4 +29,13 @@ public class StrongSecret extends Specification {
     public ArrayList<String> getPermitted() {
         return permitted;
     }
+
+    @Override
+    public String toString() {
+        return "StrongSecret{" +
+                "proposerId='" + proposerId + '\'' +
+                ", secret='" + secret + '\'' +
+                ", permitted=" + permitted +
+                '}';
+    }
 }

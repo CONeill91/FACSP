@@ -15,4 +15,11 @@ public class TimedWeakAgreement extends WeakAgreement {
     public int getTime() {
         return time;
     }
+
+    @Override
+    public String toString() {
+        return "TimedWeakAgreement{" +
+                "time=" + time +
+                '}';
+    }
 }

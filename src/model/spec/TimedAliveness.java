@@ -15,4 +15,11 @@ public class TimedAliveness extends Aliveness {
     public int getTime() {
         return time;
     }
+
+    @Override
+    public String toString() {
+        return "TimedAliveness{" +
+                "time=" + time +
+                '}';
+    }
 }

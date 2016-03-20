@@ -15,6 +15,7 @@ public class VisPanel extends JPanel {
     private JButton inc;
     private JButton dec;
     private JPanel visPanel;
+    private Visualiser visualiser;
 
 
 
@@ -27,10 +28,12 @@ public class VisPanel extends JPanel {
         stepLabel = new JLabel("Current Protocol Step: N/A",SwingConstants.CENTER);
         stepLabel.setFont(new Font("Serif", Font.BOLD, 25));
 
+
         visPanel = new JPanel();
         visPanel.setBackground(Color.LIGHT_GRAY);
         visPanel.setLayout(new BorderLayout());
         visPanel.add(stepLabel,BorderLayout.NORTH);
+
 
 
         JPanel buttonPanel = new JPanel();
@@ -64,5 +67,11 @@ public class VisPanel extends JPanel {
         return dec;
     }
 
+    public Visualiser getVisualiser() {
+        return visualiser;
+    }
 
+    public void setVisualiser(Visualiser visualiser) {
+        this.visualiser = visualiser;
+    }
 }

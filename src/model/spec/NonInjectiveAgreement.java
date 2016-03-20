@@ -32,4 +32,13 @@ public class NonInjectiveAgreement extends Specification {
     public ArrayList<String> getAgreedUpon() {
         return agreedUpon;
     }
+
+    @Override
+    public String toString() {
+        return "NonInjectiveAgreement{" +
+                "participant1='" + participant1 + '\'' +
+                ", participant2='" + participant2 + '\'' +
+                ", agreedUpon=" + agreedUpon +
+                '}';
+    }
 }

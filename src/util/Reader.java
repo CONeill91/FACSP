@@ -6,6 +6,7 @@ import java.io.*;
  * Created by Conor on 08/03/2016.
  */
 public class Reader {
+
     public String readFile(File file) {
         try {
             String line = null;
@@ -17,7 +18,7 @@ public class Reader {
             }
             return sb.toString();
         } catch (IOException e) {
-            System.err.println(e + "IOException");
+            System.err.println(e + "util/Reader IOException");
         }
             return "";
 

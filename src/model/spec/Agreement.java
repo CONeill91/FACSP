@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * more precisely, if B thinks he has successfully completed a run of the protocol with A,
  * then A has previously been running the protocol, apparently with B,and both agents agreed as to which roles they took,
  * and both agents agreed as to the values of the variables v1, . . . ,vn, and there is a one-one relationship
- * between the runs ofBand the runs ofA.
+ * between the runs of B and the runs of A.
  * Created by Conor on 18/03/2016.
  */
 public class Agreement extends Specification {
@@ -32,5 +32,14 @@ public class Agreement extends Specification {
 
     public ArrayList<String> getAgreedUpon() {
         return agreedUpon;
+    }
+
+    @Override
+    public String toString() {
+        return "Agreement{" +
+                "participant1='" + participant1 + '\'' +
+                ", participant2='" + participant2 + '\'' +
+                ", agreedUpon=" + agreedUpon +
+                '}';
     }
 }

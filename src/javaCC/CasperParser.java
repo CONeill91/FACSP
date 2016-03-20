@@ -247,11 +247,11 @@ if(m instanceof MessageList){
     throw new Error("Missing return statement in function");
   }
 
-  final public Protocol script() throws ParseException {Protocol p = new Protocol(); ArrayList<Message> messages = new ArrayList(); Intruder i;
+  final public Protocol script() throws ParseException {Protocol p = new Protocol(); ArrayList<Message> messages = new ArrayList(); ArrayList<Specification> specs = new ArrayList(); Intruder i;
     free_vars();
     processes();
     messages = prot_desc();
-    spec_section();
+    specs = spec_section();
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case EQ:{
       equivalences();
@@ -283,7 +283,7 @@ if(m instanceof MessageList){
       ;
     }
     jj_consume_token(0);
-p.setIntruder(i); p.setMessages(messages); {if ("" != null) return p;}
+p.setIntruder(i); p.setMessages(messages); p.setSpecifications(specs); {if ("" != null) return p;}
     throw new Error("Missing return statement in function");
   }
 
@@ -708,7 +708,7 @@ m.setSenderId(t.image);
     throw new Error("Missing return statement in function");
   }
 
-  final public void spec_section() throws ParseException {
+  final public ArrayList<Specification> spec_section() throws ParseException {ArrayList<Specification> specifications = new ArrayList(); Specification s;
     jj_consume_token(SPEC);
     label_16:
     while (true) {
@@ -742,7 +742,8 @@ m.setSenderId(t.image);
       case TIMED_N_I_AGREEMENT:
       case TIMED_WEAK_AGREEMENT:
       case TIMED_ALIVENESS:{
-        spec();
+        s = spec();
+specifications.add(s);
         break;
         }
       case IF:{
@@ -755,6 +756,8 @@ m.setSenderId(t.image);
         throw new ParseException();
       }
     }
+{if ("" != null) return specifications;}
+    throw new Error("Missing return statement in function");
   }
 
   final public Specification spec() throws ParseException {Token t; Token t1; String atom; ArrayList<String> agents; ArrayList fields; int time;
@@ -1505,9 +1508,7 @@ fields.add(t.image);
     }
   }
 
-  final public Intruder intruder() throws ParseException {Token t; Token t1;String s;
-    Intruder intruder = new Intruder();
-    ArrayList<String> intruderKnowledge = new ArrayList();
+  final public Intruder intruder() throws ParseException {Token t; String s; Intruder intruder = new Intruder(); ArrayList<String> intruderKnowledge = new ArrayList();
     jj_consume_token(INTRUDER_INFO);
     jj_consume_token(INTRUDER);
     jj_consume_token(EQUALS);
@@ -1546,8 +1547,7 @@ intruder.setKnowledge(intruderKnowledge);
     }
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case STALE_KNOWLEDGE:{
-      t1 = stale_knowledge_dec();
-if(t.image.equals("true")) intruder.setStaleKnowledge(true);
+      stale_knowledge_dec();
       break;
       }
     default:

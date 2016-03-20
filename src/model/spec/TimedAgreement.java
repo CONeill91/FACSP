@@ -20,4 +20,11 @@ public class TimedAgreement extends Agreement {
     public int getTime() {
         return time;
     }
+
+    @Override
+    public String toString() {
+        return "TimedAgreement{" +
+                "time=" + time +
+                '}';
+    }
 }

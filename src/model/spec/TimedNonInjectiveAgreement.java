@@ -17,4 +17,11 @@ public class TimedNonInjectiveAgreement extends NonInjectiveAgreement {
     public int getTime() {
         return time;
     }
+
+    @Override
+    public String toString() {
+        return "TimedNonInjectiveAgreement{" +
+                "time=" + time +
+                '}';
+    }
 }
