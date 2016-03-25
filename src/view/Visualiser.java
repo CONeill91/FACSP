@@ -35,10 +35,16 @@ public class Visualiser extends JPanel implements ActionListener {
         int receiver = getWidth() - 75;
         super.paintComponent(g);
         g.setFont(new Font("Serif", Font.BOLD, 20));
+        // Draw Sender String
         g.drawString("Sender", sender , this.getHeight() / 2 - 20);
+        // Draw Sender ID String
         g.drawString(messages.get(currentProtocolStep).getSenderId(), sender , this.getHeight() / 2);
-        g.drawString(messages.get(currentProtocolStep).toString(), xPosition, this.getHeight() / 2);
+
+        // Draw Msg String
+        g.drawString(messages.get(currentProtocolStep).toString(), xPosition, this.getHeight() / 2 + 20);
+        // Draw Receiver ID String
         g.drawString(messages.get(currentProtocolStep).getReceiverId(), receiver + 20, this.getHeight() / 2);
+        // Draw Receiver String
         g.drawString("Receiver", receiver , this.getHeight() / 2 - 20);;
     }
 

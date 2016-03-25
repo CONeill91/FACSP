@@ -158,7 +158,7 @@ public class PanelController {
 
                 } catch (ParseException p) {
                     highlightLine(getLineNumberFromParseException(p) - 1);
-                    mainPanel.getErrorLabel().setText("Error: Line Number " + getLineNumberFromParseException(p) + ". See editor.");
+                    mainPanel.getErrorLabel().setText("Error: Line " + getLineNumberFromParseException(p) + ". See editor.");
                 } catch (FileNotFoundException f) {
                     mainPanel.getErrorLabel().setText("File path incorrect");
                 }
@@ -217,7 +217,8 @@ public class PanelController {
 
     // Init the inc/dec buttons in Vispanel functionality.
     public void initVisualiserButtons() {
-        if(visPanel.getInc().getActionListeners().length == 0 & visPanel.getDec().getActionListeners().length == 0) {
+        // Prevents adding more than one action listener to each button
+        if (visPanel.getInc().getActionListeners().length == 0 & visPanel.getDec().getActionListeners().length == 0) {
             visPanel.getInc().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -295,9 +296,7 @@ public class PanelController {
             visPanel.setVisualiser(null);
             visPanel.revalidate();
             visPanel.repaint();
-
         }
-
     }
 
     public Protocol getProtocol() {

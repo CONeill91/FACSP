@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class VisPanel extends JPanel {
     private JLabel headerLabel;
     private JLabel stepLabel;
+    private JLabel directionLabel;
     private JButton inc;
     private JButton dec;
     private JPanel visPanel;
@@ -32,6 +33,9 @@ public class VisPanel extends JPanel {
         visPanel.setBackground(Color.LIGHT_GRAY);
         visPanel.setLayout(new BorderLayout());
         visPanel.add(stepLabel,BorderLayout.NORTH);
+        directionLabel = new JLabel("Data Flow Direction: ------>",SwingConstants.CENTER);
+        directionLabel.setFont(new Font("Serif", Font.BOLD,25));
+        visPanel.add(directionLabel,BorderLayout.SOUTH);
 
         JPanel buttonPanel = new JPanel();
         inc = new JButton("Increment protocol step");
