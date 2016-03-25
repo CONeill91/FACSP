@@ -68,4 +68,6 @@ public class SplitPane extends JFrame {
     public VisPanel getVisPanel() {
         return visPanel;
     }
+
+
 }

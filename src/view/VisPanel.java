@@ -28,13 +28,10 @@ public class VisPanel extends JPanel {
         stepLabel = new JLabel("Current Protocol Step: N/A",SwingConstants.CENTER);
         stepLabel.setFont(new Font("Serif", Font.BOLD, 25));
 
-
         visPanel = new JPanel();
         visPanel.setBackground(Color.LIGHT_GRAY);
         visPanel.setLayout(new BorderLayout());
         visPanel.add(stepLabel,BorderLayout.NORTH);
-
-
 
         JPanel buttonPanel = new JPanel();
         inc = new JButton("Increment protocol step");

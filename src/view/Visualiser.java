@@ -34,11 +34,11 @@ public class Visualiser extends JPanel implements ActionListener {
         int sender = 50;
         int receiver = getWidth() - 75;
         super.paintComponent(g);
-        g.setFont(new Font("Serif", Font.BOLD, 10));
+        g.setFont(new Font("Serif", Font.BOLD, 20));
         g.drawString("Sender", sender , this.getHeight() / 2 - 20);
         g.drawString(messages.get(currentProtocolStep).getSenderId(), sender , this.getHeight() / 2);
         g.drawString(messages.get(currentProtocolStep).toString(), xPosition, this.getHeight() / 2);
-        g.drawString(messages.get(currentProtocolStep).getReceiverId(), receiver, this.getHeight() / 2);
+        g.drawString(messages.get(currentProtocolStep).getReceiverId(), receiver + 20, this.getHeight() / 2);
         g.drawString("Receiver", receiver , this.getHeight() / 2 - 20);;
     }
 
@@ -60,6 +60,10 @@ public class Visualiser extends JPanel implements ActionListener {
 
     public void restartTimer(){
         timer.restart();
+    }
+
+    public void stopTimer(){
+        timer.stop();
     }
 
     public int getCurrentProtocolStep() {

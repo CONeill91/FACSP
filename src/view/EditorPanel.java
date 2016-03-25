@@ -12,10 +12,10 @@ import java.awt.event.ActionEvent;
  */
 public class EditorPanel extends JPanel {
     private JTextArea editor;
-    public final static String CASPER_LAYOUT_GUIDE = "-- Comment protocol name \n\n" +
+    public final static String CASPER_LAYOUT_GUIDE = "-- Sample Comment Line\n\n" +
             "Casper Script Sections: (Optional sections in square brackets) \n\n " +
-            "Free Variables\n\n" + "Processes\n\n" + "Protocol Description\n\n" + "Specification\n\n" + "[Equivalences]\n\n" +
-            "Actual Variables\n\n" + "[Functions]\n\n" + "System\n\n" + "[Channels]";
+            "Free Variables Section\n\n" + "Processes Section\n\n" + "Protocol Description Section\n\n" + "Specification Section\n\n" + "[Equivalences Section]\n\n" +
+            "Actual Variables Section\n\n" + "[Functions Section]\n\n" + "System Section\n\n" + "[Channels Section]";
 
     public EditorPanel(){
         super();
@@ -27,6 +27,7 @@ public class EditorPanel extends JPanel {
         scrollPane.setRowHeaderView(tln);
         //editor.setBackground(Color.LIGHT_GRAY);
         editor.setText(CASPER_LAYOUT_GUIDE);
+
         editor.setVisible(true);
         editor.setEditable(true);
         setLayout(new BorderLayout());

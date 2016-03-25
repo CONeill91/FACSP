@@ -136,6 +136,11 @@ public class PanelController {
         return Character.getNumericValue(p.toString().charAt(p.toString().indexOf("line") + 5));
     }
 
+    /*
+    *  Main panel functions
+    *
+    * */
+
     // Initialises Main panel functionality
     public void initMainFunc() {
         mainPanel.getStart().addActionListener(new ActionListener() {
@@ -187,7 +192,6 @@ public class PanelController {
     }
 
 
-
     // Parser the file whose path is set in filepath
     public void parseProtocol() throws ParseException, FileNotFoundException {
         CasperParser parser = new CasperParser(new java.io.FileInputStream(filePath));
@@ -195,46 +199,82 @@ public class PanelController {
 
     }
 
+    /*
+    * Vispanel functions
+    *
+    * */
 
 
-
-    public void initVisualiser(Protocol protocol){
-        // TODO finish
+    public void initVisualiser(Protocol protocol) {
         Visualiser visualiser = new Visualiser(protocol);
         visPanel.setVisualiser(visualiser);
         updateCurrentStepLabel();
-        visPanel.getVisualiserPanel().add(visualiser,BorderLayout.CENTER);
+        visPanel.getVisualiserPanel().add(visualiser, BorderLayout.CENTER);
         visPanel.getVisualiserPanel().revalidate();
         visualiser.startTimer();
         initVisualiserButtons();
     }
 
     // Init the inc/dec buttons in Vispanel functionality.
-    public void initVisualiserButtons(){
-        visPanel.getInc().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                incCurrentProtocolStep();
-                updateCurrentStepLabel();
-            }
-        });
+    public void initVisualiserButtons() {
+        if(visPanel.getInc().getActionListeners().length == 0 & visPanel.getDec().getActionListeners().length == 0) {
+            visPanel.getInc().addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (visPanel.getVisualiser() != null) {
+                        incCurrentProtocolStep();
+                        updateCurrentStepLabel();
+                    }
 
-        visPanel.getDec().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                decCurrentProtocolStep();
-                updateCurrentStepLabel();
-            }
-        });
+                }
+            });
+
+            visPanel.getDec().addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (visPanel.getVisualiser() != null) {
+                        decCurrentProtocolStep();
+                        updateCurrentStepLabel();
+                    }
+                }
+            });
+        }
     }
+
+    public void incCurrentProtocolStep() {
+        if (visPanel.getVisualiser().getCurrentProtocolStep() == protocol.getMessages().size() - 1) {
+            return;
+        }
+        visPanel.getVisualiser().setCurrentProtocolStep(visPanel.getVisualiser().getCurrentProtocolStep() + 1);
+        visPanel.getVisualiser().resetXPosition();
+    }
+
+    public void decCurrentProtocolStep() {
+        if (visPanel.getVisualiser().getCurrentProtocolStep() == 0) {
+            return;
+        }
+        visPanel.getVisualiser().setCurrentProtocolStep(visPanel.getVisualiser().getCurrentProtocolStep() - 1);
+        visPanel.getVisualiser().resetXPosition();
+    }
+
+    public void updateCurrentStepLabel() {
+        visPanel.getStepLabel().setText("Current Protocol Step: " + visPanel.getVisualiser().getCurrentProtocolStep());
+    }
+
+    /*
+    * UI resetting functions
+    * */
 
     // Reset the Application
-    public void resetUI(){
+    public void resetUI() {
         resetLabels();
         resetEditor();
+        setProtocol(new Protocol());
+        resetVisPanel();
     }
+
     // Reset the UI labels
-    public void resetLabels(){
+    public void resetLabels() {
         mainPanel.getErrorLabel().setText("Error: None");
         mainPanel.getFileLabel().setText("Casper Script Selected: None");
         visPanel.getStepLabel().setText("Current Protocol Step: N/A");
@@ -245,6 +285,19 @@ public class PanelController {
     public void resetEditor() {
         editorPanel.getEditor().setText(EditorPanel.CASPER_LAYOUT_GUIDE);
         setFilePath("");
+
+    }
+
+    public void resetVisPanel() {
+        if (visPanel.getVisualiser() != null) {
+            visPanel.getVisualiser().stopTimer();
+            visPanel.getVisualiserPanel().remove(visPanel.getVisualiser());
+            visPanel.setVisualiser(null);
+            visPanel.revalidate();
+            visPanel.repaint();
+
+        }
+
     }
 
     public Protocol getProtocol() {
@@ -263,27 +316,6 @@ public class PanelController {
         this.filePath = filePath;
     }
 
-    public void incCurrentProtocolStep(){
-        if (visPanel.getVisualiser().getCurrentProtocolStep() == protocol.getMessages().size() - 1){
-            return;
-        }
-        int i = visPanel.getVisualiser().getCurrentProtocolStep() + 1;
-        visPanel.getVisualiser().setCurrentProtocolStep(i);
-        visPanel.getVisualiser().resetXPosition();
-    }
-
-    public void decCurrentProtocolStep(){
-        if (visPanel.getVisualiser().getCurrentProtocolStep() == 0){
-            return;
-        }
-        int i = visPanel.getVisualiser().getCurrentProtocolStep() - 1;
-        visPanel.getVisualiser().setCurrentProtocolStep(i);
-        visPanel.getVisualiser().resetXPosition();
-    }
-
-    public void updateCurrentStepLabel(){
-        visPanel.getStepLabel().setText("Current Protocol Step: " + visPanel.getVisualiser().getCurrentProtocolStep());
-    }
 
 }
 
