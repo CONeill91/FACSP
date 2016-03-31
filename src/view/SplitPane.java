@@ -28,11 +28,13 @@ public class SplitPane extends JFrame {
     public SplitPane() {
         setTitle("Formal Analysis of Cryptographic Security Protocols (FACSP)");
         setBackground(Color.gray);
-        setSize(X_DIM, Y_DIM);
+        //setSize(X_DIM, Y_DIM);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setVisible(true);
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout());
         getContentPane().add(topPanel);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         // Create the panels
         initPanels();

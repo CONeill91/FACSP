@@ -33,24 +33,27 @@ public class MainPanel extends JPanel {
         labelPanel.setBackground(Color.LIGHT_GRAY);
 
 
-        infoLabel = new JLabel("<html><div style='text-align: center;'>FACSP is a research tool to formally analyse network security protocols. " +
-                "The protocol you wish to analyse should be specified using Casper Syntax. A detailed description of Casper can be found here: http://www.cs.ox.ac.uk/gavin.lowe/Security/Casper/. " +
-                "To ensure the script adheres to Casper's grammar it may be edited using the editor (A script outline is provided on startup). " +
-                "A visualisation of the protocol steps is generated in the bottom left after the protocol has been analysed. " +
-                "The protocol will be analysed with respect to the security properties in the specifications section and verified. " +
-                "The location of any vulnerabilities are also highlighted.</html>");
+//        infoLabel = new JLabel("<html><div style='text-align: center;'>FACSP is a research tool to formally analyse network security protocols. " +
+//                "The protocol you wish to analyse should be specified using Casper Syntax. A detailed description of Casper can be found here: http://www.cs.ox.ac.uk/gavin.lowe/Security/Casper/. " +
+//                "To ensure the script adheres to Casper's grammar it may be edited using the editor (A script outline is provided on startup). " +
+//                "A visualisation of the protocol steps is generated in the bottom left after the protocol has been analysed. " +
+//                "The protocol will be analysed with respect to the security properties in the specifications section and verified. " +
+//                "The location of any vulnerabilities are also highlighted.</html>");
+        fileLabel = new JLabel("Casper Script Selected: None",SwingConstants.CENTER);
+        fileLabel.setFont(font);
+        infoLabel = new JLabel("Specifications: None",SwingConstants.CENTER);
         infoLabel.setFont(font);
         errorLabel = new JLabel("<html>Error: None</html>",SwingConstants.CENTER);
         errorLabel.setFont(font);
-        fileLabel = new JLabel("Casper Script Selected: None",SwingConstants.CENTER);
-        fileLabel.setFont(font);
-        labelPanel.add(infoLabel,BorderLayout.NORTH);
-        labelPanel.add(errorLabel,BorderLayout.CENTER);
-        labelPanel.add(fileLabel,BorderLayout.SOUTH);
+
+        labelPanel.add(fileLabel,BorderLayout.NORTH);
+        labelPanel.add(infoLabel,BorderLayout.CENTER);
+        labelPanel.add(errorLabel,BorderLayout.SOUTH);
+
 
         // Panel for the buttons
         JPanel buttonPanel = new JPanel();
-        start = new JButton("Start");
+        start = new JButton("Start Analysis");
         chooseProtocol = new JButton("Choose Protocol");
         reset = new JButton("Reset");
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -84,5 +87,9 @@ public class MainPanel extends JPanel {
 
     public JButton getReset() {
         return reset;
+    }
+
+    public JLabel getInfoLabel() {
+        return infoLabel;
     }
 }

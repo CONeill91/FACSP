@@ -4,6 +4,7 @@ import javaCC.CasperParser;
 import javaCC.ParseException;
 import model.msg.Message;
 import model.Protocol;
+import model.spec.*;
 import util.Reader;
 import view.EditorPanel;
 import view.MainPanel;
@@ -153,6 +154,7 @@ public class PanelController {
                 try {
                     // Sets protocol private var.
                     parseProtocol();
+                    setSpecLabel(protocol);
                     initVisualiser(protocol);
 
 
@@ -189,6 +191,19 @@ public class PanelController {
                 resetUI();
             }
         });
+    }
+
+    public void setSpecLabel(Protocol protocol){
+        StringBuilder builder = new StringBuilder();
+        int count = 1;
+        builder.append("Specifications: <br>");
+        for(Specification spec : protocol.getSpecifications()){
+            builder.append(count + ". ");
+            builder.append(specToStringLabel(spec));
+            builder.append("<br>");
+            count++;
+        }
+        mainPanel.getInfoLabel().setText("<html>" + builder.toString() + "</html>");
     }
 
 
@@ -278,8 +293,8 @@ public class PanelController {
     public void resetLabels() {
         mainPanel.getErrorLabel().setText("Error: None");
         mainPanel.getFileLabel().setText("Casper Script Selected: None");
+        mainPanel.getInfoLabel().setText("Specifications: None");
         visPanel.getStepLabel().setText("Current Protocol Step: N/A");
-
     }
 
     // Reset the editor to sample casper outline / reset filepath
@@ -297,6 +312,27 @@ public class PanelController {
             visPanel.revalidate();
             visPanel.repaint();
         }
+    }
+    
+    public String specToStringLabel(Specification specification){
+        if (specification instanceof Secret){
+            return ("Secret. Value: " + ((Secret) specification).getSecret() + ". Participants: " + ((Secret) specification).getProposerId() + " and " + ((Secret) specification).getPermitted());
+        }
+        if(specification instanceof StrongSecret){
+            return ("StrongSecret. Value:  " + ((StrongSecret) specification).getSecret() + ". Participants: " + ((StrongSecret) specification).getProposerId() + " and " + ((StrongSecret) specification).getPermitted());
+        }
+        if(specification instanceof Agreement){
+            return ("Agreement. Values: " + ((Agreement) specification).getAgreedUpon() + ". Participants: " + ((Agreement) specification).getParticipant1() + " and " + ((Agreement) specification).getParticipant2());
+        }
+
+        if(specification instanceof Aliveness){
+            return ("Aliveness. Participants: " + ((Aliveness) specification).getParticipant1() + " and " + ((Aliveness) specification).getParticipant2());
+        }
+
+
+
+
+        return "";
     }
 
     public Protocol getProtocol() {
