@@ -1,18 +1,7 @@
 package view;
 
-
-import javaCC.CasperParser;
-import javaCC.ParseException;
-import model.Protocol;
-import util.Reader;
-
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 
 public class SplitPane extends JFrame {
     private JSplitPane splitPaneV;
@@ -20,13 +9,13 @@ public class SplitPane extends JFrame {
     private MainPanel mainPanel;
     private EditorPanel editorPanel;
     private VisPanel visPanel;
-
     final static int X_DIM = 1800;
     final static int Y_DIM = 1000;
 
 
     public SplitPane() {
         setTitle("Formal Analysis of Cryptographic Security Protocols (FACSP)");
+        setIconImage(new ImageIcon("C:/Users/Conor/IdeaProjects/Facsp/src/res/facsp.png").getImage());
         setBackground(Color.gray);
         //setSize(X_DIM, Y_DIM);
         setExtendedState(JFrame.MAXIMIZED_BOTH);

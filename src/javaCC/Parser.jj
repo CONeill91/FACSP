@@ -13,48 +13,7 @@ import model.*;
 import java.util.*;
 public class CasperParser {
 
-    public static void main(String [] args){
-        CasperParser parser;
-        if(args.length == 0){
-            System.out.println("CasperParser: Reading from Standard Input...");
-            parser = new CasperParser(System.in);
-        }
-        else if(args.length == 1){
-            System.out.println("CasperParser: Reading from file " + args[0] + "...");
-            try{
-                parser = new CasperParser(new java.io.FileInputStream(args[0]));
-            }
-            catch(java.io.FileNotFoundException e){
-                System.out.println("CasperParser: File " + args[0] + "  not found");
-                return;
-            }
-        }
-        else{
-        System.out.println("CasperParser: Usage is one of : ");
-        System.out.println("\t\t java CasperParser < inputFile");
-        System.out.println("OR");
-        System.out.println("\t\t java CasperParser inputFile");
-        return;
-        }
 
-        try{
-            Protocol p = parser.script();
-
-        }
-        catch(ParseException e){
-            System.out.print(e.getMessage());
-        }
-
-      
-    }
-
-    public static String stringify(ArrayList<String> values){
-        StringBuilder builder = new StringBuilder();
-        for(String str: values){
-            builder.append(str);
-        }
-        return builder.toString();
-    }
 }
 
 PARSER_END(CasperParser)
@@ -156,8 +115,8 @@ TOKEN : // KEYWORDS
 }
 
 TOKEN : {
-        <LINE_NO : <DIGIT> (<LETTER> | <DIGIT>)*>
-    |   <ID : <LETTER> (<LETTER> | <DIGIT>)*>
+    //    <LINE_NO : <DIGIT> (<LETTER> | <DIGIT>)*>
+       <ID : <LETTER> (<LETTER> | <DIGIT>)*>
     |   <DIGIT : ["0" - "9"]>
     |   <LETTER : ["a" - "z","A" - "Z"]>
 }
@@ -333,7 +292,7 @@ ArrayList<Message> prot_desc() : {ArrayList<Message> messages = new ArrayList();
 
 Message prot_msg() : {Token s; Token r; Message m = null;} {
     [assignment_line() ]
-     <LINE_NO> <DOT> s = <ID> <ARROW> r = <ID> <COLON>  m = msg(){m.setSenderId(s.image); m.setReceiverId(r.image);}
+     line_no() <DOT> s = <ID> <ARROW> r = <ID> <COLON>  m = msg(){m.setSenderId(s.image); m.setReceiverId(r.image);}
     [test_line() ]
     {return m;}
 
@@ -352,15 +311,15 @@ void test_line() : {} {
 }
 
 void test() : {} {
-    fdr_expr()
+   fdr_expr()
 }
 
 void fdr_expr() : {} { // TODO Handle anything
-    (<LETTER>)+ (<NOT_EQUAL>) (<LETTER>)+
+  (<ID> | <EQUALS> | <NOT_EQUAL>)*
 }
 
 Message env_msg_send() : {Token t; Message m = null;} {
-    <LINE_NO> <DOT> <ARROW> t = <ID> <COLON>  m = msg() {m.setReceiverId(t.image);}
+    line_no() <DOT> <ARROW> t = <ID> <COLON>  m = msg() {m.setReceiverId(t.image);}
     [test_line()]
     {return m;}
 
@@ -368,8 +327,12 @@ Message env_msg_send() : {Token t; Message m = null;} {
 
 Message env_msg_rec() : {Token t; Message m = null; } {
     [assignment_line() ]
-    <LINE_NO> <DOT>  t = <ID> <ARROW> <COLON> m = msg() {m.setSenderId(t.image);}
+   line_no() <DOT>  t = <ID> <ARROW> <COLON> m = msg() {m.setSenderId(t.image);}
     {return m;}
+}
+
+void line_no(): {}{
+    (<LETTER> |<DIGIT>) (LOOKAHEAD(2)line_no())*
 }
 
 ArrayList<Specification> spec_section() : {ArrayList<Specification> specifications = new ArrayList(); Specification s;} { // TODO handle temoral specs
@@ -425,7 +388,7 @@ void temporal_formulaP() : {} {
 
 void temporal_event() : {} {
     <ID> (<SENDS> | <RECEIVES>) <MESSAGE>
-    <LINE_NO> [(<FROM> | <TO>) <ID>]
+    line_no() [(<FROM> | <TO>) <ID>]
     [<CONTAINING> sub() (<COMMA> sub())]
 }
 
@@ -534,7 +497,7 @@ void withdraw_dec() : {} {
 }
 
 void generate_system() : {} {
-    <GEN_SYS> | <GEN_SYS_F_R_S> <LINE_NO> <TO> <LINE_NO>
+    <GEN_SYS> | <GEN_SYS_F_R_S> line_no() <TO> line_no()
 }
 
 Intruder intruder() : {Token t; String s; Intruder intruder = new Intruder(); ArrayList<String> intruderKnowledge = new ArrayList();} {
@@ -590,7 +553,7 @@ void channel_spec() : {} {
 }
 
 void msg_channel_spec() : {} {
-    <LINE_NO> msg_channel_prop()
+    line_no() msg_channel_prop()
 }
 
 void msg_channel_prop() : {} {
@@ -598,7 +561,7 @@ void msg_channel_prop() : {} {
 }
 
 void session_channel_spec() : {} {
-    (<SESSION> | <STREAM>) [(<INJECTIVE> | <SYMMETRIC>)] <LINE_NO> (<COMMA> <LINE_NO>)*
+    (<SESSION> | <STREAM>) [(<INJECTIVE> | <SYMMETRIC>)] line_no() (<COMMA> line_no())*
 }
 
 

@@ -5,6 +5,7 @@ import javaCC.ParseException;
 import model.msg.Message;
 import model.Protocol;
 import model.spec.*;
+import util.PrettyPrinter;
 import util.Reader;
 import view.EditorPanel;
 import view.MainPanel;
@@ -132,9 +133,10 @@ public class PanelController {
         }
     }
 
-    // Take the line number of the error from the ParseException
+    // Take the line number of the error from the ParseException -- TODO Unit test you ensure this is ok.
     public int getLineNumberFromParseException(ParseException p) {
-        return Character.getNumericValue(p.toString().charAt(p.toString().indexOf("line") + 5));
+        int offset = p.toString().indexOf("line") + 5;
+        return Integer.parseInt(p.toString().substring(offset,p.toString().indexOf(",")));
     }
 
     /*
@@ -156,9 +158,14 @@ public class PanelController {
                     parseProtocol();
                     setSpecLabel(protocol);
                     initVisualiser(protocol);
+                    PrettyPrinter prettyPrinter = new PrettyPrinter();
+                    ArrayList<String> strings = prettyPrinter.createPrettyMessageList(protocol);
+                    System.out.println(strings);
+
 
 
                 } catch (ParseException p) {
+                    System.out.println(p);
                     highlightLine(getLineNumberFromParseException(p) - 1);
                     mainPanel.getErrorLabel().setText("Error: Line " + getLineNumberFromParseException(p) + ". See editor.");
                 } catch (FileNotFoundException f) {

@@ -8,7 +8,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ReaderTest.class, ParserTest.class, PotGeneratorTest.class
+        ReaderTest.class, ParserTest.class,
 })
 
 public class JunitTestSuite {
