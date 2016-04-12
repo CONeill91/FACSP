@@ -11,10 +11,14 @@ import java.util.ArrayList;
  */
 public class Protocol {
     private String Title;
+    private String initiator;
+    private String responder;
     private Intruder intruder;
     private ArrayList<Message> messages;
     private ArrayList<Process_> processes;
     private ArrayList<Specification> specifications;
+    private ArrayList<String> initiatorGenerates;
+    private ArrayList<String> responderGenerates;
 
     public String getTitle() {
         return Title;
@@ -22,6 +26,22 @@ public class Protocol {
 
     public void setTitle(String title) {
         Title = title;
+    }
+
+    public String getInitiator() {
+        return initiator;
+    }
+
+    public void setInitiator(String initiator) {
+        this.initiator = initiator;
+    }
+
+    public String getResponder() {
+        return responder;
+    }
+
+    public void setResponder(String responder) {
+        this.responder = responder;
     }
 
     public Intruder getIntruder() {
@@ -54,6 +74,51 @@ public class Protocol {
 
     public void setSpecifications(ArrayList<Specification> specifications) {
         this.specifications = specifications;
+    }
+
+    public ArrayList<String> getInitiatorGenerates() {
+        return initiatorGenerates;
+    }
+
+    public void setInitiatorGenerates(ArrayList<String> initiatorGenerates) {
+        this.initiatorGenerates = initiatorGenerates;
+    }
+
+    public ArrayList<String> getResponderGenerates() {
+        return responderGenerates;
+    }
+
+    public void setResponderGenerates(ArrayList<String> responderGenerates) {
+        this.responderGenerates = responderGenerates;
+    }
+
+    public void setInitAndRespInfo(){
+        initiatorGenerates = new ArrayList<>();
+        responderGenerates = new ArrayList<>();
+        for (Process_ p : processes){
+            if(p.getName().equals("INITIATOR")){
+                setInitiator(p.getParams().get(0));
+                if(p.getParams().size() > 1){
+                    for(int i = 1; i < p.getParams().size(); i++){
+                        if (Character.isUpperCase(p.getParams().get(i).charAt(0))){
+                            break;
+                        }
+                        initiatorGenerates.add(p.getParams().get(i));
+                    }
+                }
+            }
+            if(p.getName().equals("RESPONDER")){
+                setResponder(p.getParams().get(0));
+                if(p.getParams().size() > 1){
+                    for(int i = 1; i < p.getParams().size(); i++){
+                        if (Character.isUpperCase(p.getParams().get(i).charAt(0))){
+                            break;
+                        }
+                        responderGenerates.add(p.getParams().get(i));
+                    }
+                }
+            }
+        }
     }
 
     @Override

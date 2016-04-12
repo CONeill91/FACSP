@@ -1,5 +1,7 @@
 package model.msg;
 
+import java.util.ArrayList;
+
 /**
  * Created by Conor on 22/02/2016.
  */
@@ -22,4 +24,7 @@ public abstract class Message {
     public void setReceiverId(String receiverId) {
         this.receiverId = receiverId;
     }
+
+
+
 }

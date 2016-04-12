@@ -8,7 +8,6 @@ import java.util.ArrayList;
 public class Process_ {
     private String name;
     private ArrayList<String> params;
-    private ArrayList<String> knows;
 
     public String getName() {
         return name;
@@ -26,13 +25,11 @@ public class Process_ {
         this.params = params;
     }
 
-    public ArrayList<String> getKnows() {
-        return knows;
+    @Override
+    public String toString() {
+        return "Process_{" +
+                "name='" + name + '\'' +
+                ", params=" + params +
+                '}';
     }
-
-    public void setKnows(ArrayList<String> knows) {
-        this.knows = knows;
-    }
-
-
 }

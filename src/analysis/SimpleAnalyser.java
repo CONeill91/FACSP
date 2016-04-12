@@ -1,47 +1,54 @@
 package analysis;
 
 import model.Protocol;
-import model.msg.Atom;
-import model.msg.Encrypt;
-import model.msg.Message;
-import model.msg.MessageList;
+import model.msg.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
- * SimpleAnalyser which boosts an Intruder's Knowledge if a protocol is poorly structured
+ * Simple Analyser which boosts an Intruder's Knowledge if a protocol is poorly structured
  * Created by Conor on 31/03/2016.
  */
 public class SimpleAnalyser {
-    private HashSet<String> knowledge;
+    private HashSet<Message> knowledge;
     private ArrayList<Message> messageList;
 
     public SimpleAnalyser(Protocol protocol){
-        for(String str: protocol.getIntruder().getKnowledge()){
-            knowledge.add(str);
-        }
         this.messageList = protocol.getMessages();
+        knowledge = new HashSet<>();
     }
 
     public void doAnalysis(){
         for(Message msg: messageList){
-
+            analyse(msg);
         }
     }
 
-    public String analyseMessageStructure(Message msg){
+    public void analyse(Message msg){
         if(msg instanceof Atom){
-            return ((Atom) msg).getVarName();
+            knowledge.add(msg);
         }
 
         if (msg instanceof MessageList){
-            //TODO
+            for(Message m : ((MessageList) msg).getMessageList()){
+                analyse(m);
+            }
         }
         if(msg instanceof Encrypt){
+            if(knowledge.contains(((Encrypt) msg).getKey())){
+                knowledge.add(((Encrypt) msg).getMessageList());
+            }
+        }
+
+        if(msg instanceof Xor){
 
         }
-        return "";
+
+        if(msg instanceof Forward){
+
+        }
+
     }
 
 

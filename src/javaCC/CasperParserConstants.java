@@ -89,131 +89,133 @@ public interface CasperParserConstants {
   /** RegularExpression Id. */
   int FUNCS = 44;
   /** RegularExpression Id. */
-  int SYMBOLIC = 45;
+  int INLINE_FUNCS = 45;
   /** RegularExpression Id. */
-  int SYSTEM = 46;
+  int SYMBOLIC = 46;
   /** RegularExpression Id. */
-  int WITHDRAW_OPTION = 47;
+  int SYSTEM = 47;
   /** RegularExpression Id. */
-  int TRUE = 48;
+  int WITHDRAW_OPTION = 48;
   /** RegularExpression Id. */
-  int FALSE = 49;
+  int TRUE = 49;
   /** RegularExpression Id. */
-  int GEN_SYS = 50;
+  int FALSE = 50;
   /** RegularExpression Id. */
-  int GEN_SYS_F_R_S = 51;
+  int GEN_SYS = 51;
   /** RegularExpression Id. */
-  int INTRUDER_INFO = 52;
+  int GEN_SYS_F_R_S = 52;
   /** RegularExpression Id. */
-  int INTRUDER = 53;
+  int INTRUDER_INFO = 53;
   /** RegularExpression Id. */
-  int INTRUDER_KNOWLEDGE = 54;
+  int INTRUDER = 54;
   /** RegularExpression Id. */
-  int INTRUDER_PROCESSES = 55;
+  int INTRUDER_KNOWLEDGE = 55;
   /** RegularExpression Id. */
-  int UNBOUND_P = 56;
+  int INTRUDER_PROCESSES = 56;
   /** RegularExpression Id. */
-  int STALE_KNOWLEDGE = 57;
+  int UNBOUND_P = 57;
   /** RegularExpression Id. */
-  int CRACKABLE = 58;
+  int STALE_KNOWLEDGE = 58;
   /** RegularExpression Id. */
-  int GUESSABLE = 59;
+  int CRACKABLE = 59;
   /** RegularExpression Id. */
-  int CHANNELS = 60;
+  int GUESSABLE = 60;
   /** RegularExpression Id. */
-  int AUTH = 61;
+  int CHANNELS = 61;
   /** RegularExpression Id. */
-  int SECRET_LOWER = 62;
+  int AUTH = 62;
   /** RegularExpression Id. */
-  int DIRECT = 63;
+  int SECRET_LOWER = 63;
   /** RegularExpression Id. */
-  int C = 64;
+  int DIRECT = 64;
   /** RegularExpression Id. */
-  int NF = 65;
+  int C = 65;
   /** RegularExpression Id. */
-  int NRA = 66;
+  int NF = 66;
   /** RegularExpression Id. */
-  int NRA_MINUS = 67;
+  int NRA = 67;
   /** RegularExpression Id. */
-  int NR = 68;
+  int NRA_MINUS = 68;
   /** RegularExpression Id. */
-  int NR_MINUS = 69;
+  int NR = 69;
   /** RegularExpression Id. */
-  int SESSION = 70;
+  int NR_MINUS = 70;
   /** RegularExpression Id. */
-  int STREAM = 71;
+  int SESSION = 71;
   /** RegularExpression Id. */
-  int INJECTIVE = 72;
+  int STREAM = 72;
   /** RegularExpression Id. */
-  int SYMMETRIC = 73;
+  int INJECTIVE = 73;
   /** RegularExpression Id. */
-  int SIMP = 74;
+  int SYMMETRIC = 74;
   /** RegularExpression Id. */
-  int REMOVE_FIELDS = 75;
+  int SIMP = 75;
   /** RegularExpression Id. */
-  int REMOVE_HASHED_FIELDS = 76;
+  int REMOVE_FIELDS = 76;
   /** RegularExpression Id. */
-  int REMOVE_ENCRYPTION = 77;
+  int REMOVE_HASHED_FIELDS = 77;
   /** RegularExpression Id. */
-  int REMOVE_HASH = 78;
+  int REMOVE_ENCRYPTION = 78;
   /** RegularExpression Id. */
-  int SWAP_PAIRS = 79;
+  int REMOVE_HASH = 79;
   /** RegularExpression Id. */
-  int COALESCE = 80;
+  int SWAP_PAIRS = 80;
   /** RegularExpression Id. */
-  int REMOVE_PLAIN_AND_ENC = 81;
+  int COALESCE = 81;
   /** RegularExpression Id. */
-  int X = 82;
+  int REMOVE_PLAIN_AND_ENC = 82;
   /** RegularExpression Id. */
-  int ID = 83;
+  int X = 83;
   /** RegularExpression Id. */
-  int DIGIT = 84;
+  int ID = 84;
   /** RegularExpression Id. */
   int LETTER = 85;
   /** RegularExpression Id. */
-  int XOR = 86;
+  int DIGIT = 86;
   /** RegularExpression Id. */
-  int ARROW = 87;
+  int XOR = 87;
   /** RegularExpression Id. */
-  int MOD = 88;
+  int ARROW = 88;
   /** RegularExpression Id. */
-  int EQUALS = 89;
+  int MOD = 89;
   /** RegularExpression Id. */
-  int NOT_EQUAL = 90;
+  int EQUALS = 90;
   /** RegularExpression Id. */
-  int PIPE_DASH = 91;
+  int NOT_EQUAL = 91;
   /** RegularExpression Id. */
-  int L_PAREN = 92;
+  int PIPE_DASH = 92;
   /** RegularExpression Id. */
-  int R_PAREN = 93;
+  int L_PAREN = 93;
   /** RegularExpression Id. */
-  int L_BRACE = 94;
+  int R_PAREN = 94;
   /** RegularExpression Id. */
-  int R_BRACE = 95;
+  int L_BRACE = 95;
   /** RegularExpression Id. */
-  int L_SQUARE = 96;
+  int R_BRACE = 96;
   /** RegularExpression Id. */
-  int R_SQUARE = 97;
+  int L_SQUARE = 97;
   /** RegularExpression Id. */
-  int LESS_THAN = 98;
+  int R_SQUARE = 98;
   /** RegularExpression Id. */
-  int GREATER_THAN = 99;
+  int LESS_THAN = 99;
   /** RegularExpression Id. */
-  int COMMA = 100;
+  int GREATER_THAN = 100;
   /** RegularExpression Id. */
-  int SEMI_COLON = 101;
+  int COMMA = 101;
   /** RegularExpression Id. */
-  int COLON = 102;
+  int SEMI_COLON = 102;
   /** RegularExpression Id. */
-  int DOT = 103;
+  int COLON = 103;
   /** RegularExpression Id. */
-  int TWO_DOTS = 104;
+  int DOT = 104;
   /** RegularExpression Id. */
-  int ASSIGNMENT = 105;
+  int TWO_DOTS = 105;
   /** RegularExpression Id. */
-  int UNDERSCORE = 106;
+  int ASSIGNMENT = 106;
   /** RegularExpression Id. */
-  int OTHER = 107;
+  int UNDERSCORE = 107;
+  /** RegularExpression Id. */
+  int OTHER = 108;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -265,6 +267,7 @@ public interface CasperParserConstants {
     "\"TimeStamp\"",
     "\"MaxRunTime\"",
     "\"#Functions\"",
+    "\"#Inline Functions\"",
     "\"symbolic\"",
     "\"#System\"",
     "\"WithdrawOption\"",
@@ -304,8 +307,8 @@ public interface CasperParserConstants {
     "\"RemovePlainAndEnc\"",
     "\"x\"",
     "<ID>",
-    "<DIGIT>",
     "<LETTER>",
+    "<DIGIT>",
     "\"(+)\"",
     "\"->\"",
     "\"%\"",

@@ -14,7 +14,7 @@ public class EditorPanel extends JPanel {
     private JTextArea editor;
     public final static String CASPER_LAYOUT_GUIDE = "-- Sample Comment Line\n\n" +
             "Casper Script Sections: (Optional sections in square brackets) \n\n " +
-            "Free Variables Section\n\n" + "Processes Section\n\n" + "Protocol Description Section\n\n" + "Specification Section\n\n" + "[Equivalences Section]\n\n" +
+            "Free Variables Section\n\n" + "Processes Section\n*Should contain Initiator / Responder Processes*\n\n" + "Protocol Description Section\n\n" + "Specification Section\n\n" + "[Equivalences Section]\n\n" +
             "Actual Variables Section\n\n" + "[Functions Section]\n\n" + "System Section\n\n" + "[Channels Section]";
 
     public EditorPanel(){

@@ -74,6 +74,7 @@ TOKEN : // KEYWORDS
     |   <TIMESTAMP : "TimeStamp">
     |   <MAX_RUN_TIME : "MaxRunTime">
     |   <FUNCS : "#Functions">
+    |   <INLINE_FUNCS : "#Inline Functions">
     |   <SYMBOLIC : "symbolic">
     |   <SYSTEM : "#System">
     |   <WITHDRAW_OPTION : "WithdrawOption">
@@ -115,10 +116,12 @@ TOKEN : // KEYWORDS
 }
 
 TOKEN : {
-    //    <LINE_NO : <DIGIT> (<LETTER> | <DIGIT>)*>
-       <ID : <LETTER> (<LETTER> | <DIGIT>)*>
-    |   <DIGIT : ["0" - "9"]>
+        <ID : <LETTER> (<LETTER> | <DIGIT>)*>
     |   <LETTER : ["a" - "z","A" - "Z"]>
+    |   <DIGIT : ["0" - "9"]>
+
+
+
 }
 
 TOKEN : {
@@ -221,14 +224,14 @@ Message msgAtom() : {Token t; Token t1 = null; Token t2 = null;  Message m = nul
     {return t;}
 }
 
-Token process_name() : {Token t;} {
+String process_name() : {Token t; } {
     t = <ID>
-    {return t;}
+    {return t.image;}
 }
 
-Protocol script() : {Protocol p = new Protocol(); ArrayList<Message> messages = new ArrayList(); ArrayList<Specification> specs = new ArrayList(); Intruder i;} {
+Protocol script() : {Protocol p = new Protocol(); ArrayList<Message> messages = new ArrayList(); ArrayList<Specification> specs = new ArrayList(); Intruder i; ArrayList<Process_> proc;} {
     free_vars()
-    processes()
+    proc = processes()
     messages = prot_desc()
     specs = spec_section()
     [equivalences()]
@@ -238,7 +241,7 @@ Protocol script() : {Protocol p = new Protocol(); ArrayList<Message> messages = 
     i = intruder()
     [channels()] // Optional to fit script example
     <EOF>
-    {p.setIntruder(i); p.setMessages(messages); p.setSpecifications(specs); return p;}
+    {p.setIntruder(i); p.setMessages(messages); p.setSpecifications(specs); p.setProcesses(proc); return p;}
 }
 
 void free_vars() : {} {
@@ -246,7 +249,7 @@ void free_vars() : {} {
 }
 
 void var_dec() : {} {
-    <ID> (<COMMA> <ID>)* <COLON> (type_expr() | <TIMESTAMP>) [subtype_expr()]
+    <ID> (<COMMA> <ID>)* <COLON> type_expr()  [subtype_expr()]
 }
 
 void subtype_expr() : {} {
@@ -265,15 +268,15 @@ void inv_key_pair() : {} {
     <L_PAREN> <ID> <COMMA> <ID> <R_PAREN>
 }
 
-void processes() : {} {
-    <PROCESSES>  (process_def())*
+ArrayList<Process_> processes() : {ArrayList<Process_> processes = new ArrayList(); Process_ p;} {
+    <PROCESSES> (p = process_def() {processes.add(p);})*
+    {return processes;}
 }
 
-void process_def() : {Token t;} {
-    process_name() <L_PAREN> <ID> (<COMMA> <ID> )* <R_PAREN> [knows_stmt()] [gen_stmt()]
-
+Process_ process_def() : {Token t; String name = null; Process_ process = new Process_(); ArrayList<String> params = new ArrayList();} {
+    name = process_name() <L_PAREN> t = <ID> {params.add(t.image);} (<COMMA> t = <ID> {params.add(t.image);} )* <R_PAREN> [knows_stmt()] [gen_stmt()]
+    { process.setName(name); process.setParams(params);return process;}
 }
-
 void knows_stmt() : {} {
     <KNOWS> atom() (<COMMA> atom())*
 }
@@ -315,7 +318,7 @@ void test() : {} {
 }
 
 void fdr_expr() : {} { // TODO Handle anything
-  (<ID> | <EQUALS> | <NOT_EQUAL>)*
+  (<EQUALS> | <NOT_EQUAL>| atom())*
 }
 
 Message env_msg_send() : {Token t; Message m = null;} {
@@ -327,12 +330,12 @@ Message env_msg_send() : {Token t; Message m = null;} {
 
 Message env_msg_rec() : {Token t; Message m = null; } {
     [assignment_line() ]
-   line_no() <DOT>  t = <ID> <ARROW> <COLON> m = msg() {m.setSenderId(t.image);}
+    line_no() <DOT>  t = <ID> <ARROW> <COLON> m = msg() {m.setSenderId(t.image);}
     {return m;}
 }
 
 void line_no(): {}{
-    (<LETTER> |<DIGIT>) (LOOKAHEAD(2)line_no())*
+    (<DIGIT>) (LOOKAHEAD(3)<DIGIT>| <ID>)*
 }
 
 ArrayList<Specification> spec_section() : {ArrayList<Specification> specifications = new ArrayList(); Specification s;} { // TODO handle temoral specs
@@ -454,7 +457,7 @@ void act_inv_key_pair() : {} {
 }
 
 void functions() : {} {
-    <FUNCS>  (functions_line())*
+    (<FUNCS> | <INLINE_FUNCS>)  (functions_line())*
 }
 
 void functions_line() : {} {

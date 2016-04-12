@@ -1,7 +1,9 @@
 package controllers;
 
+import analysis.Analyser;
 import javaCC.CasperParser;
 import javaCC.ParseException;
+import model.Process_;
 import model.msg.Message;
 import model.Protocol;
 import model.spec.*;
@@ -32,6 +34,10 @@ public class PanelController {
     private VisPanel visPanel;
     private Protocol protocol;
     private String filePath;
+
+    final String SAVE_PIC_FILEPATH = "C:/Users/Conor/IdeaProjects/Facsp/src/res/save.png";
+    final String RESET_PIC_FILEPATH = "C:/Users/Conor/IdeaProjects/Facsp/src/res/reset.png";
+    final String EXIT_PIC_FILEPATH = "C:/Users/Conor/IdeaProjects/Facsp/src/res/exit.png";
 
     public PanelController(MainPanel mainPanel, EditorPanel editorPanel, VisPanel visPanel, Protocol protocol) {
         this.mainPanel = mainPanel;
@@ -64,7 +70,7 @@ public class PanelController {
                 saveScript();
             }
         });
-
+        save.setIcon(new ImageIcon(SAVE_PIC_FILEPATH));
 
         JMenuItem reset = new JMenuItem(new AbstractAction("Reset editor") {
             @Override
@@ -72,6 +78,7 @@ public class PanelController {
                 resetEditor();
             }
         });
+        reset.setIcon(new ImageIcon(RESET_PIC_FILEPATH));
 
         JMenuItem exit = new JMenuItem(new AbstractAction("Exit") {
             @Override
@@ -79,6 +86,7 @@ public class PanelController {
                 System.exit(0);
             }
         });
+        exit.setIcon(new ImageIcon(EXIT_PIC_FILEPATH));
 
         file.add(save);
         file.add(reset);
@@ -155,12 +163,15 @@ public class PanelController {
                 }
                 try {
                     // Sets protocol private var.
+                    resetHighlighter();
                     parseProtocol();
                     setSpecLabel(protocol);
                     initVisualiser(protocol);
-                    PrettyPrinter prettyPrinter = new PrettyPrinter();
-                    ArrayList<String> strings = prettyPrinter.createPrettyMessageList(protocol);
-                    System.out.println(strings);
+                    protocol.setInitAndRespInfo();
+                    Analyser analyser = new Analyser(protocol);
+                    analyser.generateInitiatorImpersonation();
+                    analyser.generateResponderImpersonation();
+
 
 
 
@@ -222,7 +233,7 @@ public class PanelController {
     }
 
     /*
-    * Vispanel functions
+    * VisPanel functions
     *
     * */
 
@@ -320,6 +331,11 @@ public class PanelController {
             visPanel.repaint();
         }
     }
+
+    public void resetHighlighter(){
+        Highlighter highlighter = editorPanel.getEditor().getHighlighter();
+        highlighter.removeAllHighlights();
+    }
     
     public String specToStringLabel(Specification specification){
         if (specification instanceof Secret){
@@ -335,10 +351,6 @@ public class PanelController {
         if(specification instanceof Aliveness){
             return ("Aliveness. Participants: " + ((Aliveness) specification).getParticipant1() + " and " + ((Aliveness) specification).getParticipant2());
         }
-
-
-
-
         return "";
     }
 
