@@ -317,7 +317,7 @@ void test() : {} {
    fdr_expr()
 }
 
-void fdr_expr() : {} { // TODO Handle anything
+void fdr_expr() : {} {
   (<EQUALS> | <NOT_EQUAL>| atom())*
 }
 

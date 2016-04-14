@@ -3,6 +3,7 @@ package controllers;
 import analysis.Analyser;
 import javaCC.CasperParser;
 import javaCC.ParseException;
+import model.ErrorLocation;
 import model.Process_;
 import model.msg.Message;
 import model.Protocol;
@@ -168,9 +169,10 @@ public class PanelController {
      *
      */
 
-    public int getLineNumberFromParseException(ParseException p) {
-        int offset = p.toString().indexOf("line") + 5;
-        return Integer.parseInt(p.toString().substring(offset,p.toString().indexOf(",")));
+    public ErrorLocation getLineNumberFromParseException(ParseException p) {
+        int lineNumberOffset = p.toString().indexOf("line") + 5;
+        int columnNumberOffset = p.toString().indexOf("column") + 7;
+        return new ErrorLocation(Integer.parseInt(p.toString().substring(lineNumberOffset,p.toString().indexOf(","))),Integer.parseInt(p.toString().substring(columnNumberOffset,p.toString().indexOf("\n") - 2)));
     }
 
     /**
@@ -195,13 +197,11 @@ public class PanelController {
                     Analyser analyser = new Analyser(protocol);
                     analyser.generateImpersonators();
                     initVisualiser(analyser.getInitiatorImpersonation(),analyser.getResponderImpersonation());
-
-
-
                 } catch (ParseException p) {
                     System.out.println(p);
-                    highlightLine(getLineNumberFromParseException(p) - 1);
-                    mainPanel.getErrorLabel().setText("Error: Line " + getLineNumberFromParseException(p) + ". See editor.");
+                    ErrorLocation errorLocation = getLineNumberFromParseException(p);
+                    highlightLine(errorLocation.getLineNumber() - 1);
+                    mainPanel.getErrorLabel().setText("Error: Line " + errorLocation.getLineNumber() + " Column: " + errorLocation.getColumnNumber() + ". See editor.");
                 } catch (FileNotFoundException f) {
                     mainPanel.getErrorLabel().setText("File path incorrect");
                 }
@@ -268,7 +268,7 @@ public class PanelController {
     /**
      * Initialises visualiser
      * @param init Initiator messageList
-     * @param init Responder messageList
+     * @param resp Responder messageList
      */
 
     public void initVisualiser(ArrayList<Message> init, ArrayList<Message> resp ) {
