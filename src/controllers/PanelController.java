@@ -26,8 +26,10 @@ import java.io.*;
 import java.util.ArrayList;
 
 /**
- * Created by Conor on 11/03/2016.
+ * Controller for the Application.
+ * @author Conor
  */
+
 public class PanelController {
     private MainPanel mainPanel;
     private EditorPanel editorPanel;
@@ -39,6 +41,13 @@ public class PanelController {
     final String RESET_PIC_FILEPATH = "C:/Users/Conor/IdeaProjects/Facsp/src/res/reset.png";
     final String EXIT_PIC_FILEPATH = "C:/Users/Conor/IdeaProjects/Facsp/src/res/exit.png";
 
+    /**
+     * @param mainPanel Main panel to be set
+     * @param editorPanel Editor panel to be set
+     * @param visPanel Vis panel to be set
+     * @param protocol Protocol object to contain the analysed Protocol
+     */
+
     public PanelController(MainPanel mainPanel, EditorPanel editorPanel, VisPanel visPanel, Protocol protocol) {
         this.mainPanel = mainPanel;
         this.editorPanel = editorPanel;
@@ -49,16 +58,20 @@ public class PanelController {
         this.filePath = "";
     }
 
-    /*
-    * EditorPanel functions
-    *
-    * */
-    // Initialises Editor panel functionality
+    /**
+     * Initialises the editor panel functionality
+     */
+
     public void initEditorFunc() {
         editorPanel.add(initMenuBar(), BorderLayout.NORTH);
     }
 
-    // Returns functioning menubar to be added to the editor panel.
+    /**
+     * Returns functional JMenuBar for use in the Editor panel.
+     * @return JMenuBar
+     *
+     */
+
     public JMenuBar initMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("File");
@@ -97,7 +110,10 @@ public class PanelController {
         return menuBar;
     }
 
-    // Save & select a script for analysis
+    /**
+     * Saves a file to disk. For use in the editorPanel.
+     */
+
     public void saveScript() {
         final JFileChooser SaveAs = new JFileChooser();
         SaveAs.setApproveButtonText("Save & select script");
@@ -128,7 +144,12 @@ public class PanelController {
         }
     }
 
-    // Highlight the given line in the editor panel
+    /**
+     * Highlights a line in the editor panel JTextArea
+     * @param lineNo Line to be highlighted
+     */
+
+
     public void highlightLine(int lineNo) {
         Highlighter highlighter = editorPanel.getEditor().getHighlighter();
         highlighter.removeAllHighlights();
@@ -141,18 +162,21 @@ public class PanelController {
         }
     }
 
-    // Take the line number of the error from the ParseException -- TODO Unit test you ensure this is ok.
+    /**
+     * Returns the line number of an error in a Casper Script.
+     * @param p ParseException
+     *
+     */
+
     public int getLineNumberFromParseException(ParseException p) {
         int offset = p.toString().indexOf("line") + 5;
         return Integer.parseInt(p.toString().substring(offset,p.toString().indexOf(",")));
     }
 
-    /*
-    *  Main panel functions
-    *
-    * */
+    /**
+     * Initialises main panel functionality
+     */
 
-    // Initialises Main panel functionality
     public void initMainFunc() {
         mainPanel.getStart().addActionListener(new ActionListener() {
             @Override
@@ -165,13 +189,12 @@ public class PanelController {
                     // Sets protocol private var.
                     resetHighlighter();
                     parseProtocol();
-                    setSpecLabel(protocol);
-                    initVisualiser(protocol);
                     protocol.setInitAndRespInfo();
-                    Analyser analyser = new Analyser(protocol);
-                    analyser.generateInitiatorImpersonation();
-                    analyser.generateResponderImpersonation();
+                    setSpecLabel(protocol);
 
+                    Analyser analyser = new Analyser(protocol);
+                    analyser.generateImpersonators();
+                    initVisualiser(analyser.getInitiatorImpersonation(),analyser.getResponderImpersonation());
 
 
 
@@ -211,6 +234,12 @@ public class PanelController {
         });
     }
 
+    /**
+     * Sets the specification label in the mainpanel
+     * @param protocol Protocol which contains the specifications
+     *
+     */
+
     public void setSpecLabel(Protocol protocol){
         StringBuilder builder = new StringBuilder();
         int count = 1;
@@ -225,81 +254,35 @@ public class PanelController {
     }
 
 
-    // Parser the file whose path is set in filepath
+    /**
+     * Parses the file, specified by the filepath
+     * @exception ParseException - JavaCC error
+     * @exception FileNotFoundException if the filepath is null or incorrect
+     */
     public void parseProtocol() throws ParseException, FileNotFoundException {
-        CasperParser parser = new CasperParser(new java.io.FileInputStream(filePath));
+        CasperParser parser = new CasperParser(new java.io.FileInputStream(getFilePath()));
         protocol = parser.script();
 
     }
 
-    /*
-    * VisPanel functions
-    *
-    * */
+    /**
+     * Initialises visualiser
+     * @param init Initiator messageList
+     * @param init Responder messageList
+     */
 
-
-    public void initVisualiser(Protocol protocol) {
-        Visualiser visualiser = new Visualiser(protocol);
+    public void initVisualiser(ArrayList<Message> init, ArrayList<Message> resp ) {
+        Visualiser visualiser = new Visualiser(protocol.getMessages(), init, resp);
         visPanel.setVisualiser(visualiser);
-        updateCurrentStepLabel();
         visPanel.getVisualiserPanel().add(visualiser, BorderLayout.CENTER);
         visPanel.getVisualiserPanel().revalidate();
-        visualiser.startTimer();
-        initVisualiserButtons();
+
     }
 
-    // Init the inc/dec buttons in Vispanel functionality.
-    public void initVisualiserButtons() {
-        // Prevents adding more than one action listener to each button
-        if (visPanel.getInc().getActionListeners().length == 0 & visPanel.getDec().getActionListeners().length == 0) {
-            visPanel.getInc().addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (visPanel.getVisualiser() != null) {
-                        incCurrentProtocolStep();
-                        updateCurrentStepLabel();
-                    }
+    /**
+     * Resets the UI
+     */
 
-                }
-            });
-
-            visPanel.getDec().addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (visPanel.getVisualiser() != null) {
-                        decCurrentProtocolStep();
-                        updateCurrentStepLabel();
-                    }
-                }
-            });
-        }
-    }
-
-    public void incCurrentProtocolStep() {
-        if (visPanel.getVisualiser().getCurrentProtocolStep() == protocol.getMessages().size() - 1) {
-            return;
-        }
-        visPanel.getVisualiser().setCurrentProtocolStep(visPanel.getVisualiser().getCurrentProtocolStep() + 1);
-        visPanel.getVisualiser().resetXPosition();
-    }
-
-    public void decCurrentProtocolStep() {
-        if (visPanel.getVisualiser().getCurrentProtocolStep() == 0) {
-            return;
-        }
-        visPanel.getVisualiser().setCurrentProtocolStep(visPanel.getVisualiser().getCurrentProtocolStep() - 1);
-        visPanel.getVisualiser().resetXPosition();
-    }
-
-    public void updateCurrentStepLabel() {
-        visPanel.getStepLabel().setText("Current Protocol Step: " + visPanel.getVisualiser().getCurrentProtocolStep());
-    }
-
-    /*
-    * UI resetting functions
-    * */
-
-    // Reset the Application
     public void resetUI() {
         resetLabels();
         resetEditor();
@@ -307,24 +290,31 @@ public class PanelController {
         resetVisPanel();
     }
 
-    // Reset the UI labels
+    /**
+     * Resets all labels
+     */
+
     public void resetLabels() {
         mainPanel.getErrorLabel().setText("Error: None");
         mainPanel.getFileLabel().setText("Casper Script Selected: None");
         mainPanel.getInfoLabel().setText("Specifications: None");
-        visPanel.getStepLabel().setText("Current Protocol Step: N/A");
     }
 
-    // Reset the editor to sample casper outline / reset filepath
+    /**
+     * Resets the editor panel and filepath.
+     */
+
     public void resetEditor() {
         editorPanel.getEditor().setText(EditorPanel.CASPER_LAYOUT_GUIDE);
         setFilePath("");
-
     }
+
+    /**
+     * Resets the Vis panel
+     */
 
     public void resetVisPanel() {
         if (visPanel.getVisualiser() != null) {
-            visPanel.getVisualiser().stopTimer();
             visPanel.getVisualiserPanel().remove(visPanel.getVisualiser());
             visPanel.setVisualiser(null);
             visPanel.revalidate();
@@ -332,11 +322,21 @@ public class PanelController {
         }
     }
 
+    /**
+     * Resets the Highlighter
+     */
+
     public void resetHighlighter(){
         Highlighter highlighter = editorPanel.getEditor().getHighlighter();
         highlighter.removeAllHighlights();
     }
-    
+
+    /**
+     * Resets the UI
+     * @param specification Specification to be prettied
+     * @return String prettied for the view
+     */
+
     public String specToStringLabel(Specification specification){
         if (specification instanceof Secret){
             return ("Secret. Value: " + ((Secret) specification).getSecret() + ". Participants: " + ((Secret) specification).getProposerId() + " and " + ((Secret) specification).getPermitted());
@@ -354,17 +354,38 @@ public class PanelController {
         return "";
     }
 
+    /**
+     * Returns the protocol
+     * @return Protocol
+     */
+
     public Protocol getProtocol() {
         return protocol;
     }
+
+    /**
+     * Sets the protocol
+     * @param protocol protocol to be set
+     */
 
     public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
     }
 
+    /**
+     * Returns the filepath
+     * @return String - Filepath of file to be parsed.
+     *
+     */
+
     public String getFilePath() {
         return filePath;
     }
+
+    /**
+     * Sets the filepath
+     * @param filePath String to be set
+     */
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;

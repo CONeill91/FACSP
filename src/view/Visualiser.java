@@ -2,6 +2,7 @@ package view;
 
 import model.Protocol;
 import model.msg.Message;
+import util.PrettyPrinter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,77 +11,37 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 /**
- * Created by Conor on 16/03/2016.
+ * Class to model the visualiser components
+ *
  */
-public class Visualiser extends JPanel implements ActionListener {
-    private int xPosition;
-    private int xVelocity;
-    private Timer timer;
+public class Visualiser extends JPanel {
     private ArrayList<Message> messages;
-    private int currentProtocolStep;
+    private ArrayList<Message> initiator;
+    private ArrayList<Message> responder;
+    private PrettyPrinter prettyPrinter;
+    private int x = 10;
+    private int y = this.getHeight()+ 100 ;
 
-
-    public Visualiser(Protocol protocol) {
-        this.currentProtocolStep = 0;
-        this.messages = protocol.getMessages();
+    public Visualiser(ArrayList<Message> messages, ArrayList<Message> initiator, ArrayList<Message> responder ) {
+        this.messages = messages;
+        this.initiator = initiator;
+        this.responder = responder;
+        this.prettyPrinter = new PrettyPrinter();
         this.setVisible(true);
-        this.xPosition = 105;
-        this.xVelocity = 1;
-        timer = new Timer(10,this);
         setBackground(Color.LIGHT_GRAY);
     }
 
     public void paintComponent(Graphics g){
-        int sender = 50;
-        int receiver = getWidth() - 75;
         super.paintComponent(g);
-        g.setFont(new Font("Serif", Font.BOLD, 20));
-        // Draw Sender String
-        g.drawString("Sender", sender , this.getHeight() / 2 - 20);
-        // Draw Sender ID String
-        g.drawString(messages.get(currentProtocolStep).getSenderId(), sender , this.getHeight() / 2);
-
-        // Draw Msg String
-        g.drawString(messages.get(currentProtocolStep).toString(), xPosition, this.getHeight() / 2 + 20);
-        // Draw Receiver ID String
-        g.drawString(messages.get(currentProtocolStep).getReceiverId(), receiver + 20, this.getHeight() / 2);
-        // Draw Receiver String
-        g.drawString("Receiver", receiver , this.getHeight() / 2 - 20);;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-        if(xPosition >= this.getWidth() - 200) {
-            xPosition = 105;
-            timer.restart();
-
+        g.setFont(new Font("Serif", Font.BOLD, 16));
+        for(int i = 0; i < messages.size(); i++){
+            g.drawString(i + ". " + messages.get(i).getSenderId() + "-->" + messages.get(i).getReceiverId() + ": " +  prettyPrinter.createPrettyMessage(messages.get(i)),x,y);
+            g.drawString(i + ". " + initiator.get(i).getSenderId() + "-->" + initiator.get(i).getReceiverId() + ": " + prettyPrinter.createPrettyMessage(initiator.get(i)),300,y);
+            g.drawString(i + ". " + responder.get(i).getSenderId() + "-->" + responder.get(i).getReceiverId() + ": " + prettyPrinter.createPrettyMessage(responder.get(i)),600,y);
+            y += 20;
         }
-        xPosition += xVelocity;
-        repaint();
     }
 
-    public void startTimer(){
-        timer.start();
-    }
 
-    public void restartTimer(){
-        timer.restart();
-    }
 
-    public void stopTimer(){
-        timer.stop();
-    }
-
-    public int getCurrentProtocolStep() {
-        return currentProtocolStep;
-    }
-
-    public void setCurrentProtocolStep(int currentProtocolStep) {
-        this.currentProtocolStep = currentProtocolStep;
-    }
-
-    public void resetXPosition(){
-        this.xPosition = 105;
-    }
 }

@@ -4,11 +4,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 /**
- * Created by Conor on 29/02/2016.
+ * JUnit Test Suite for the application
+ * @author Conor
  */
+
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ReaderTest.class, ParserTest.class,
+        ReaderTest.class, ParserTest.class, PrettyPrinterTest.class,
 })
 
 public class JunitTestSuite {

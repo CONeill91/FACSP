@@ -3,6 +3,11 @@ package view;
 import java.awt.*;
 import javax.swing.*;
 
+/**
+ * Main view component class. Splits Jframe in 3.
+ * @author Conor
+ */
+
 public class SplitPane extends JFrame {
     private JSplitPane splitPaneV;
     private JSplitPane splitPaneH;
@@ -12,11 +17,12 @@ public class SplitPane extends JFrame {
     final static int X_DIM = 1800;
     final static int Y_DIM = 1000;
 
-
     public SplitPane() {
+
+
         setTitle("Formal Analysis of Cryptographic Security Protocols (FACSP)");
         setIconImage(new ImageIcon("C:/Users/Conor/IdeaProjects/Facsp/src/res/facsp.png").getImage());
-        setBackground(Color.gray);
+        //setBackground(Color.gray);
         //setSize(X_DIM, Y_DIM);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setVisible(true);
@@ -42,19 +48,41 @@ public class SplitPane extends JFrame {
 
     }
 
+    /**
+     * Initialises all 3 panels of the splitpane.
+     */
+
     public void initPanels(){
         mainPanel = new MainPanel();
         editorPanel = new EditorPanel();
         visPanel = new VisPanel();
     }
 
+    /**
+     * Returns the main panel
+     * @return  MainPanel
+     * @see     MainPanel
+     */
+
     public MainPanel getMainPanel() {
         return mainPanel;
     }
 
+    /**
+     * Returns the editor panel
+     * @return  EditorPanel
+     * @see     EditorPanel
+     */
+
     public EditorPanel getEditorPanel() {
         return editorPanel;
     }
+
+    /**
+     * Returns the vis panel
+     * @return  VisPanel
+     * @see     VisPanel
+     */
 
     public VisPanel getVisPanel() {
         return visPanel;

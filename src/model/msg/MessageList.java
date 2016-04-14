@@ -3,7 +3,9 @@ package model.msg;
 import java.util.ArrayList;
 
 /**
- * Created by Conor on 01/03/2016.
+ * Class to model a MessageList Message
+ *
+ * @author Conor
  */
 public class MessageList extends Message {
     private ArrayList<Message> messageList;
@@ -16,13 +18,30 @@ public class MessageList extends Message {
         this.messageList = messageList;
     }
 
+    /**
+     * Returns the messageList
+     * @return messageList
+     *
+     */
+
     public ArrayList<Message> getMessageList() {
         return messageList;
     }
 
+    /**
+     * Sets the messageList
+     * @param messageList messageList to be set
+     *
+     */
+
     public void setMessageList(ArrayList<Message> messageList) {
         this.messageList = messageList;
     }
+
+    /**
+     * Returns String representation of the object
+     * @return  String
+     */
 
     @Override
     public String toString() {

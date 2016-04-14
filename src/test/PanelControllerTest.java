@@ -8,7 +8,9 @@ import static org.junit.Assert.*;
 import view.SplitPane;
 
 /**
- * Created by Conor on 20/03/2016.
+ *
+ * Class to test the Panel Controller
+ * @author Conor
  */
 public class PanelControllerTest {
     SplitPane splitPane;

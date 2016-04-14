@@ -7,7 +7,8 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 
 /**
- * Created by Conor on 11/03/2016.
+ * Main panel component class
+ * @author Conor
  */
 public class MainPanel extends JPanel {
     private JLabel headerLabel;
@@ -18,6 +19,9 @@ public class MainPanel extends JPanel {
     private JButton chooseProtocol;
     private JButton reset;
 
+    /**
+     * Constructor.
+     */
 
     public MainPanel() {
         super();
@@ -68,28 +72,64 @@ public class MainPanel extends JPanel {
 
 
     }
+    /**
+     * Returns the main panel error label.
+     * @return  JLabel
+     * @see     JLabel
+     */
 
     public JLabel getErrorLabel() {
         return errorLabel;
     }
 
+    /**
+     * Returns the main panel file label.
+     * @return  JLabel
+     * @see     JLabel
+     */
+
     public JLabel getFileLabel() {
         return fileLabel;
     }
+
+    /**
+     * Returns the main panel start button.
+     * @return  JButton
+     * @see     JButton
+     */
 
     public JButton getStart() {
         return start;
     }
 
+    /**
+     * Returns the main panel choose protocol button.
+     * @return  JButton
+     * @see     JButton
+     */
+
     public JButton getChooseProtocol() {
         return chooseProtocol;
     }
+
+    /**
+     * Returns the main panel reset button
+     * @return  JButton
+     * @see     JButton
+     */
 
     public JButton getReset() {
         return reset;
     }
 
+    /**
+     * Returns the main panel info label
+     * @return  JLabel
+     * @see     JLabel
+     */
+
     public JLabel getInfoLabel() {
         return infoLabel;
     }
+
 }

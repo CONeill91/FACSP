@@ -7,70 +7,55 @@ import java.awt.*;
 import java.util.ArrayList;
 
 /**
- * Created by Conor on 11/03/2016.
+ * Vis panel component class
+ * @author Conor
  */
 public class VisPanel extends JPanel {
     private JLabel headerLabel;
-    private JLabel stepLabel;
-    private JLabel directionLabel;
-    private JButton inc;
-    private JButton dec;
     private JPanel visPanel;
     private Visualiser visualiser;
-
-
 
     public VisPanel(){
         super();
         setBackground(Color.LIGHT_GRAY);
         setLayout(new BorderLayout());
-        headerLabel = new JLabel("Protocol Visualiser",SwingConstants.CENTER);
+        headerLabel = new JLabel("Protocol Analysis Visualiser",SwingConstants.CENTER);
         headerLabel.setFont(new Font("Serif", Font.BOLD, 30));
-        stepLabel = new JLabel("Current Protocol Step: N/A",SwingConstants.CENTER);
-        stepLabel.setFont(new Font("Serif", Font.BOLD, 25));
 
         visPanel = new JPanel();
         visPanel.setBackground(Color.LIGHT_GRAY);
         visPanel.setLayout(new BorderLayout());
-        visPanel.add(stepLabel,BorderLayout.NORTH);
-        directionLabel = new JLabel("Data Flow Direction: ------>",SwingConstants.CENTER);
-        directionLabel.setFont(new Font("Serif", Font.BOLD,25));
-        visPanel.add(directionLabel,BorderLayout.SOUTH);
-
-        JPanel buttonPanel = new JPanel();
-        inc = new JButton("Increment protocol step");
-        dec = new JButton("Decrement protocol step");
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.setBackground(Color.LIGHT_GRAY);
-        buttonPanel.add(inc);
-        buttonPanel.add(dec);
 
         add(headerLabel, BorderLayout.NORTH);
         add(visPanel, BorderLayout.CENTER);
-        add(buttonPanel,BorderLayout.SOUTH);
+
     }
 
-
-
-    public JLabel getStepLabel() {
-        return stepLabel;
-    }
+    /**
+     * Returns the visualiser panel
+     * @return  JPanel
+     * @see     JPanel
+     */
 
     public JPanel getVisualiserPanel() {
         return visPanel;
     }
 
-    public JButton getInc() {
-        return inc;
-    }
-
-    public JButton getDec() {
-        return dec;
-    }
+    /**
+     * Returns the visualiser
+     * @return  JPanel
+     * @see     JPanel
+     */
 
     public Visualiser getVisualiser() {
         return visualiser;
     }
+
+    /**
+     * Sets the visualiser
+     * @param visualiser Visualiser to be set
+     * @see     JPanel
+     */
 
     public void setVisualiser(Visualiser visualiser) {
         this.visualiser = visualiser;

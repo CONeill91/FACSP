@@ -8,7 +8,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 /**
- * Created by Conor on 11/03/2016.
+ * Editor panel component class
+ * @author Conor
  */
 public class EditorPanel extends JPanel {
     private JTextArea editor;
@@ -19,21 +20,22 @@ public class EditorPanel extends JPanel {
 
     public EditorPanel(){
         super();
-        //setBackground(Color.LIGHT_GRAY);
         editor = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(editor);
         TextLineNumber tln = new TextLineNumber(editor);
-       // tln.setBackground(Color.LIGHT_GRAY);
         scrollPane.setRowHeaderView(tln);
-        //editor.setBackground(Color.LIGHT_GRAY);
         editor.setText(CASPER_LAYOUT_GUIDE);
-
         editor.setVisible(true);
         editor.setEditable(true);
         setLayout(new BorderLayout());
         add(scrollPane);
     }
 
+    /**
+     * Returns the editor panel JTextArea.
+     * @return  JTextArea.
+     * @see     JTextArea
+     */
     public JTextArea getEditor() {
         return editor;
     }

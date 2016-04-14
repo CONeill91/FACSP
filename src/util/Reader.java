@@ -3,9 +3,18 @@ package util;
 import java.io.*;
 
 /**
- * Created by Conor on 08/03/2016.
+ * Class to read content from a file
+ * @author Conor
  */
 public class Reader {
+
+    /**
+     * Takes a file and returns the string content it contains for the editor panel.
+     *
+     * @param file File to be read.
+     * @return  String contents of the file
+     * @see     File
+     */
 
     public String readFile(File file) {
         try {

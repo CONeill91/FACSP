@@ -5,24 +5,21 @@ import org.junit.Test;
 import util.Reader;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * Created by Conor on 18/03/2016.
+ *
+ * Class to test the Reader
+ * @author Conor
  */
 public class ReaderTest {
     Reader reader;
-    final String SAMPLE_FILEPATH = "C:/Users/Conor/Documents/NS7.spl~";
+    final String SAMPLE_FILEPATH = "C:/Users/Conor/Documents/Test Scripts/NS7.spl~";
 
     @Before
     public void initReader(){
         reader = new Reader();
-    }
-
-    @Test
-    public void testReadFileFailureIOException(){
-        File file = new File(SAMPLE_FILEPATH);
-        reader.readFile(file);
     }
 
     @Test (expected = NullPointerException.class)

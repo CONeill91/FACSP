@@ -1,20 +1,20 @@
 package test;
-import static org.junit.Assert.*;
+
 import javaCC.CasperParser;
 import javaCC.ParseException;
-import javaCC.Token;
 import org.junit.Test;
-
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
+
 
 /**
- * Created by Conor on 16/03/2016.
+ *
+ * Class to test the CasperParser
+ * @author Conor
  */
 public class ParserTest {
 
-    final String VALID_SCRIPT_FILE_PATH = "C:/Users/Conor/IdeaProjects/Facsp/src/NS7.spl~";
+    final String VALID_SCRIPT_FILE_PATH = "C:/Users/Conor/Documents/Test Scripts/NS7.spl~";
 
     // @Before not valid here as the Casper Parser takes different arguments
     private CasperParser initCasperParserStringReader(String input){

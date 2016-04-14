@@ -1,7 +1,8 @@
 package model.spec;
 
 /**
- * Created by Conor on 16/03/2016.
+ * Abstract base class to model a Specification
+ * @author Conor
  */
 public abstract class Specification {
 
