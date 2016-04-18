@@ -32,6 +32,14 @@ public class PrettyPrinter {
             return builder.toString();
         }
 
+        if(msg instanceof UnDecryptable){
+            StringBuilder builder = new StringBuilder();
+            builder.append(createPrettyMessage(((UnDecryptable) msg).getMessage()));
+            builder.append("%");
+            builder.append(((UnDecryptable) msg).getVarName());
+            return builder.toString();
+        }
+
         if(msg instanceof Forward){
             StringBuilder builder = new StringBuilder();
             builder.append(createPrettyMessage(((Forward) msg).getMessage()));

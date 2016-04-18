@@ -106,7 +106,7 @@ if(messagelist.getMessageList().size() == 1){
 if(tok == null){
                 {if ("" != null) return t;}
             }
-            {if ("" != null) return new Forward(t.toString(),m);}
+            {if ("" != null) return new UnDecryptable(t,m.toString());}
         break;
         }
       default:

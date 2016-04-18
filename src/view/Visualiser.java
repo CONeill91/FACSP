@@ -20,7 +20,7 @@ public class Visualiser extends JPanel {
     private ArrayList<Message> responder;
     private PrettyPrinter prettyPrinter;
     private int x = 10;
-    private int y = this.getHeight()+ 100 ;
+    private int y = this.getHeight() / 2 ;
 
     public Visualiser(ArrayList<Message> messages, ArrayList<Message> initiator, ArrayList<Message> responder ) {
         this.messages = messages;

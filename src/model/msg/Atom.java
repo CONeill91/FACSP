@@ -43,6 +43,6 @@ public class Atom extends Message {
 
     @Override
     public String toString() {
-        return "Atom " + varName + " ";
+        return varName;
     }
 }

@@ -21,7 +21,6 @@ public class ErrorLocation {
     /**
      * Returns the lineNumber of the error
      * @return lineNumber
-     *
      */
 
     public int getLineNumber() {
@@ -31,7 +30,6 @@ public class ErrorLocation {
     /**
      * Returns the columnNumber of the error
      * @return columnNumber
-     *
      */
 
     public int getColumnNumber() {

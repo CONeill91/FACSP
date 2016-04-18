@@ -8,7 +8,7 @@ import java.util.HashSet;
 
 /**
  * Simple Analyser which boosts an Intruder's Knowledge if a protocol is poorly structured
- * Created by Conor on 31/03/2016.
+ * @author Conor
  */
 public class SimpleAnalyser {
     private HashSet<Message> knowledge;

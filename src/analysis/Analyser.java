@@ -107,7 +107,14 @@ public class Analyser {
                 changeGeneratedValues(generated, ((Xor) msg).getMessage2());
             }
 
-            if (msg instanceof Forward) {
+            if (msg instanceof UnDecryptable ) {
+                if(((UnDecryptable) msg).getVarName().equals(value)) {
+                    ((UnDecryptable) msg).setVarName("E(" + ((UnDecryptable) msg).getVarName() + ")");
+                }
+                changeGeneratedValues(generated, ((UnDecryptable) msg).getMessage());
+            }
+
+            if (msg instanceof Forward ) {
                 if(((Forward) msg).getVarName().equals(value)) {
                     ((Forward) msg).setVarName("E(" + ((Forward) msg).getVarName() + ")");
                 }
@@ -137,45 +144,86 @@ public class Analyser {
 
 public Message copyMessage(Message message){
         if(message instanceof Atom){
-        Atom atom=new Atom(((Atom)message).getVarName());
-        atom.setSenderId(message.getSenderId());
-        atom.setReceiverId(message.getReceiverId());
-        return atom;
+            Atom atom=new Atom(((Atom)message).getVarName());
+            atom.setSenderId(message.getSenderId());
+            atom.setReceiverId(message.getReceiverId());
+            return atom;
         }
 
         if(message instanceof Xor){
-        Xor xor=new Xor(copyMessage(((Xor)message).getMessage1()),copyMessage(((Xor)message).getMessage2()));
-        xor.setSenderId(message.getSenderId());
-        xor.setReceiverId(message.getReceiverId());
-        return xor;
+            Xor xor=new Xor(copyMessage(((Xor)message).getMessage1()),copyMessage(((Xor)message).getMessage2()));
+            xor.setSenderId(message.getSenderId());
+            xor.setReceiverId(message.getReceiverId());
+            return xor;
+        }
+
+        if(message instanceof UnDecryptable){
+            UnDecryptable undecryptable = new UnDecryptable(copyMessage(((UnDecryptable) message).getMessage()), ((UnDecryptable)message).getVarName());
+            undecryptable.setSenderId(message.getSenderId());
+            undecryptable.setReceiverId(message.getReceiverId());
+            return undecryptable;
         }
 
         if(message instanceof Forward){
-        Forward forward=new Forward(((Forward)message).getVarName(),copyMessage(((Forward)message).getMessage()));
-        forward.setSenderId(message.getSenderId());
-        forward.setReceiverId(message.getReceiverId());
-        return forward;
+            Forward forward=new Forward(((Forward)message).getVarName(),copyMessage(((Forward)message).getMessage()));
+            forward.setSenderId(message.getSenderId());
+            forward.setReceiverId(message.getReceiverId());
+            return forward;
         }
 
         if(message instanceof Encrypt){
-        Encrypt encrypt=new Encrypt(copyMessage(((Encrypt)message).getKey()),(MessageList)copyMessage(((Encrypt)message).getMessageList()));
-        encrypt.setSenderId(message.getSenderId());
-        encrypt.setReceiverId(message.getReceiverId());
-        return encrypt;
+            Encrypt encrypt=new Encrypt(copyMessage(((Encrypt)message).getKey()),(MessageList)copyMessage(((Encrypt)message).getMessageList()));
+            encrypt.setSenderId(message.getSenderId());
+            encrypt.setReceiverId(message.getReceiverId());
+            return encrypt;
         }
 
         if(message instanceof MessageList){
-        ArrayList<Message>msgList=new ArrayList<>();
-        for(Message msg:((MessageList)message).getMessageList()){
-        msgList.add(copyMessage(msg));
-        }
-        MessageList messageList=new MessageList(msgList);
-        messageList.setSenderId(message.getSenderId());
-        messageList.setReceiverId(message.getReceiverId());
-        return messageList;
+            ArrayList<Message>msgList=new ArrayList<>();
+            for(Message msg:((MessageList)message).getMessageList()){
+                msgList.add(copyMessage(msg));
+            }
+            MessageList messageList=new MessageList(msgList);
+            messageList.setSenderId(message.getSenderId());
+            messageList.setReceiverId(message.getReceiverId());
+            return messageList;
         }
         return null;
+}
+
+    /**
+     * Evaluates whether a message may be known to an entity (Eg. for encryption does an entity possess the correct key).
+     * @param message Message to be evaluated
+     * @see         Message
+     * @return boolean indicating whether a user may read the message successfully.
+     */
+
+    public boolean evaluateMessage(Message message){
+        if(message instanceof Atom){
+            return true;
         }
+
+        if(message instanceof Xor){
+
+        }
+
+        if(message instanceof UnDecryptable){
+
+        }
+
+        if(message instanceof Forward){
+
+        }
+
+        if(message instanceof Encrypt){
+            
+        }
+
+        if(message instanceof MessageList){
+
+        }
+        return true;
+    }
 
     /**
      * Returns the initiator impersonation list

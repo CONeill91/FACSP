@@ -193,6 +193,7 @@ public class PanelController {
                     parseProtocol();
                     protocol.setInitAndRespInfo();
                     setSpecLabel(protocol);
+                    System.out.println(protocol.getMessages());
 
                     Analyser analyser = new Analyser(protocol);
                     analyser.generateImpersonators();
@@ -332,7 +333,7 @@ public class PanelController {
     }
 
     /**
-     * Resets the UI
+     * Returns a string representation of a Specification suitable for the UI.
      * @param specification Specification to be prettied
      * @return String prettied for the view
      */

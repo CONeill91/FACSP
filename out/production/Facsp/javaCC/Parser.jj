@@ -185,7 +185,7 @@ Message cpt() : {Token tok = null; Message m = null; Message t;} {
             if(tok == null){
                 return t;
             }
-            return new Forward(t.toString(),m);
+            return new UnDecryptable(t,m.toString());
         }
 }
 
