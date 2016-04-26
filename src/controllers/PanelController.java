@@ -188,15 +188,11 @@ public class PanelController {
                     return;
                 }
                 try {
-                    // Sets protocol private var.
                     resetHighlighter();
                     parseProtocol();
                     protocol.setInitAndRespInfo();
                     setSpecLabel(protocol);
-                    System.out.println(protocol.getMessages());
-
                     Analyser analyser = new Analyser(protocol);
-                    analyser.generateImpersonators();
                     initVisualiser(analyser.getInitiatorImpersonation(),analyser.getResponderImpersonation());
                 } catch (ParseException p) {
                     System.out.println(p);
@@ -242,6 +238,9 @@ public class PanelController {
      */
 
     public void setSpecLabel(Protocol protocol){
+
+        // "<html><span bgcolor=\"yellow\">This is the label text</span></html>" TODO highlight red / green on analysis
+
         StringBuilder builder = new StringBuilder();
         int count = 1;
         builder.append("Specifications: <br>");

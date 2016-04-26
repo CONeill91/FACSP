@@ -27,8 +27,10 @@ public class Application {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
+
                 SplitPane mainScreen = new SplitPane();
                 new PanelController(mainScreen.getMainPanel(), mainScreen.getEditorPanel(), mainScreen.getVisPanel(), new Protocol());
+                SwingUtilities.updateComponentTreeUI(mainScreen);
             }
         });
     }

@@ -243,7 +243,9 @@ public class Protocol {
 
     public void addInitAndRespIdentities(){
         responderGenerates.add(this.getResponder());
+        responderGenerates.add("PK(" + this.getResponder() + ")");
         initiatorGenerates.add(this.getInitiator());
+        initiatorGenerates.add("PK(" + this.getInitiator() + ")");
     }
 
     /**

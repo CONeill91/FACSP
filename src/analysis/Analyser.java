@@ -4,6 +4,7 @@ import model.Protocol;
 import model.msg.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * The analyser creates representations of the protocol steps where an intruder E impersonates the initiator & responder.
@@ -14,6 +15,8 @@ public class Analyser {
     private Protocol protocol;
     private ArrayList<Message> initiatorImpersonation;
     private ArrayList<Message> responderImpersonation;
+    private HashSet<String> knowledge;
+    private ArrayList<Integer> path; // TODO Fill with path to data.
 
     /**
      * Constructor.
@@ -25,7 +28,12 @@ public class Analyser {
         this.protocol = protocol;
         initiatorImpersonation = new ArrayList<>();
         responderImpersonation = new ArrayList<>();
+        knowledge = new HashSet<>();
         fillCopies();
+        fillKnowledge();
+        generateImpersonators();
+
+
     }
 
     /**
@@ -38,6 +46,28 @@ public class Analyser {
             initiatorImpersonation.add(copyMessage(msg));
             responderImpersonation.add(copyMessage(msg));
         }
+
+    }
+
+    /**
+     * Fills intruder knowledge set
+     * @see     Message
+     */
+
+    public void fillKnowledge() {
+        // Adds init/resp identities
+        knowledge.add(protocol.getInitiator());
+        knowledge.add(protocol.getResponder());
+        // Adds what init/resp generate themselves
+        knowledge.addAll(protocol.getInitiatorGenerates());
+        knowledge.addAll(protocol.getResponderGenerates());
+        // Adds public keys
+        knowledge.add("PK(" + protocol.getInitiator() + ")");
+        knowledge.add("PK(" + protocol.getResponder() + ")");
+        knowledge.add("PK(E)");
+        // Adds Intruder Private key
+        knowledge.add("SK(E)");
+
 
     }
 
@@ -101,6 +131,10 @@ public class Analyser {
                 if (((Atom) msg).getVarName().equals(value)) {
                     ((Atom) msg).setVarName("E(" + ((Atom) msg).getVarName() + ")");
                 }
+                if(((Atom) msg).getVarName().equals("E(PK(A))") || ((Atom) msg).getVarName().equals("E(PK(B))")){
+                    ((Atom) msg).setVarName("PK(E)");
+                }
+
             }
             if (msg instanceof Xor) {
                 changeGeneratedValues(generated,((Xor) msg).getMessage1());
@@ -198,9 +232,9 @@ public Message copyMessage(Message message){
      * @return boolean indicating whether a user may read the message successfully.
      */
 
-    public boolean evaluateMessage(Message message){
+    public void evaluateMessage(Message message){
         if(message instanceof Atom){
-            return true;
+
         }
 
         if(message instanceof Xor){
@@ -216,13 +250,13 @@ public Message copyMessage(Message message){
         }
 
         if(message instanceof Encrypt){
-            
+
         }
 
         if(message instanceof MessageList){
 
         }
-        return true;
+
     }
 
     /**
