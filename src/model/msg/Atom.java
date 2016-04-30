@@ -45,4 +45,9 @@ public class Atom extends Message {
     public String toString() {
         return varName;
     }
+
+    @Override
+    public boolean equals(Object object){
+        return super.equals(object);
+    }
 }

@@ -17,6 +17,7 @@ public class Analyser {
     private ArrayList<Message> initiatorImpersonation;
     private ArrayList<Message> responderImpersonation;
     private Set<String> knowledge;
+    private Set<Message> replayable;
     private ArrayList<String> path; // TODO Fill with path to data. In format A1 , B3 or C9.
 
     /**
@@ -30,16 +31,17 @@ public class Analyser {
         initiatorImpersonation = new ArrayList<>();
         responderImpersonation = new ArrayList<>();
         knowledge = new HashSet<>();
+
         fillCopies();
         fillKnowledge();
         generateImpersonators();
-        System.out.println(knowledge.toString());
-        for(Message m: responderImpersonation){
-            System.out.println(evaluateMessageSend(m));
-        }
+        System.out.println(responderImpersonation.get(1).equals(responderImpersonation.get(3)));
 
-//        extendKnowledgeOnMessageList(responderImpersonation);
 //        System.out.println(knowledge.toString());
+//        doesPathExist(initiatorImpersonation,responderImpersonation);
+//        System.out.println(knowledge.toString());
+
+
     }
 
     /**
@@ -253,19 +255,19 @@ public class Analyser {
         }
 
         if(message instanceof UnDecryptable) {
-            if(evaluateMessage(message)){
+            if(evaluateMessageReceived(message)){
                 knowledge.add(((UnDecryptable) message).getVarName());
             }
         }
 
         if(message instanceof Forward){
-            if(evaluateMessage(message)){
+            if(evaluateMessageReceived(message)){
                 knowledge.add(((Forward) message).getVarName());
             }
         }
 
         if(message instanceof Encrypt){
-           if (evaluateMessage(message)){
+           if (evaluateMessageReceived(message)){
                extendKnowledge(((Encrypt) message).getMessageList());
            }
         }
@@ -279,13 +281,28 @@ public class Analyser {
 
 
 
-    public void extendKnowledgeOnMessageList(ArrayList<Message> messages){
-        for(int i = 0; i < messages.size(); i++) {
-            if(!evaluateMessage(messages.get(i))){
-                System.out.println("Evaluation failed at step: " + i);
-                break;
+    /**
+     * Evaluates a message
+     * <br>
+     * @param message Message to be evaluated
+     * @see         Message
+     *
+     */
+
+    public boolean evaluateMessage(Message message){
+        if(message.getSenderId().startsWith("E(")){
+            return evaluateMessageSend(message);
+        }
+
+        if(message.getReceiverId().startsWith("E(")){
+            if(evaluateMessageReceived(message)){
+                extendKnowledge(message);
             }
-            extendKnowledge(messages.get(i  ));
+            return (evaluateMessageReceived(message));
+        }
+        else{
+            evaluateMessageReceived(message);
+            return true;
         }
 
 
@@ -301,7 +318,7 @@ public class Analyser {
      *
      */
 
-    public boolean evaluateMessage(Message message){
+    public boolean evaluateMessageReceived(Message message){
         if(message instanceof Atom){
             if (knowledge.contains(inverseKey(((Atom) message).getVarName()))){
                 return true;
@@ -313,7 +330,7 @@ public class Analyser {
         }
 
         if(message instanceof UnDecryptable) {
-           return evaluateMessage(((UnDecryptable) message).getMessage());
+           return evaluateMessageReceived(((UnDecryptable) message).getMessage());
         }
 
         if(message instanceof Forward){
@@ -321,31 +338,25 @@ public class Analyser {
         }
 
         if(message instanceof Encrypt){
-           return evaluateMessage(((Encrypt) message).getKey());
+           return evaluateMessageReceived(((Encrypt) message).getKey());
         }
 
         if(message instanceof MessageList){
             boolean flag = false;
             for(Message msg: ((MessageList) message).getMessageList()){
-                flag = evaluateMessage(msg);
+                flag = evaluateMessageReceived(msg);
                 if(!flag){
                     break;
                 }
             }
             return flag;
         }
+
         return false;
     }
 
-    public void evaluateMessageList(){
-        for(int i = 0; i < protocol.getMessages().size(); i++){
-            System.out.println("Step: " + i);
-            System.out.println(evaluateMessage(protocol.getMessages().get(i)));
-            System.out.println(evaluateMessage(initiatorImpersonation.get(i)));
-            System.out.println(evaluateMessage(responderImpersonation.get(i)));
-            System.out.println();
-        }
-    }
+
+
 
     /**
      * Evaluate whether a message may be sent as an impersonator, based on the attackers current knowledge. (Replayed)
@@ -389,8 +400,44 @@ public class Analyser {
             return flag;
         }
 
+//        if(replayable.contains(message)){
+//          System.out.println("EvalMsgSend() --- >> Replayable = true");
+//          return true;
+//        }
+
+
         return false;
     }
+
+    public void doesPathExist(ArrayList<Message> init, ArrayList<Message> resp){
+        int initPos = 0;
+        int respPos = 0;
+        boolean respFlag = true;
+        for(int i = 0; i < init.size() + resp.size() ; i++){
+            if(respFlag){
+                if(evaluateMessage(resp.get(respPos))) {
+                    System.out.println("ResList. Index:" + respPos);
+                    if(respPos < resp.size() - 1){
+                        respPos++;
+                    }
+
+                }else{
+                    respFlag = false;
+                }
+            }else{
+                if(evaluateMessage(init.get(initPos))){
+                    System.out.println("InitList. Index:" + initPos);
+                    if(initPos < init.size() - 1){
+                        initPos++;
+                    }
+                }else {
+                    respFlag = true;
+                }
+            }
+        }
+    }
+
+
 
 
 

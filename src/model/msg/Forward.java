@@ -63,4 +63,9 @@ public class Forward extends Message {
     public String toString() {
         return "Forward " + varName + " " + message;
     }
+
+    @Override
+    public boolean equals(Object object){
+        return super.equals(object);
+    }
 }

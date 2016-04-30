@@ -46,6 +46,10 @@ public class MessageList extends Message {
     @Override
     public String toString() {
         return "MessageList " + messageList + " ";
+    }
 
+    @Override
+    public boolean equals(Object object){
+        return super.equals(object);
     }
 }

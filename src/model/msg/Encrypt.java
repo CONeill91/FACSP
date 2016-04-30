@@ -63,4 +63,9 @@ public class Encrypt extends Message {
     public String toString() {
         return "Encrypt " + "(" + key + ") " + "(" + messageList + ")";
     }
+
+    @Override
+    public boolean equals(Object object){
+       return super.equals(object);
+    }
 }

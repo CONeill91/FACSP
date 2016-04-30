@@ -12,6 +12,8 @@ import javax.swing.*;
  */
 public class Application {
 
+    private SplitPane mainScreen;
+
     /**
      * Method to start application / Set L&F
      * @param args - Unused
@@ -33,6 +35,8 @@ public class Application {
                 SwingUtilities.updateComponentTreeUI(mainScreen);
             }
         });
+
     }
+
 }
 

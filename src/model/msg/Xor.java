@@ -63,4 +63,9 @@ public class Xor extends Message {
     public String toString() {
         return "Xor " + message1 + " " + message2 + " ";
     }
+
+    @Override
+    public boolean equals(Object object){
+        return super.equals(object);
+    }
 }

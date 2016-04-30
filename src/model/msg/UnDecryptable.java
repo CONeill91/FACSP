@@ -63,4 +63,9 @@ public class UnDecryptable extends Message {
     public String toString() {
         return "UnDecryptable " + message + " " + varName + " ";
     }
+
+    @Override
+    public boolean equals(Object object){
+        return super.equals(object);
+    }
 }
