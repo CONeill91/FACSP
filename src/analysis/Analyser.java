@@ -31,15 +31,16 @@ public class Analyser {
         initiatorImpersonation = new ArrayList<>();
         responderImpersonation = new ArrayList<>();
         knowledge = new HashSet<>();
+        replayable = new HashSet<>();
 
         fillCopies();
         fillKnowledge();
         generateImpersonators();
-        System.out.println(responderImpersonation.get(1).equals(responderImpersonation.get(3)));
 
-//        System.out.println(knowledge.toString());
-//        doesPathExist(initiatorImpersonation,responderImpersonation);
-//        System.out.println(knowledge.toString());
+
+
+        doesPathExist(initiatorImpersonation,responderImpersonation);
+
 
 
     }
@@ -319,6 +320,7 @@ public class Analyser {
      */
 
     public boolean evaluateMessageReceived(Message message){
+        replayable.add(message);
         if(message instanceof Atom){
             if (knowledge.contains(inverseKey(((Atom) message).getVarName()))){
                 return true;
@@ -367,6 +369,14 @@ public class Analyser {
      */
 
     public boolean evaluateMessageSend(Message message){
+        for(Message m: replayable){
+            if(m.equals(message)){
+                System.out.println("Replayable msg found");
+                return true;
+            }
+        }
+
+
         if(message instanceof Atom){
             return (knowledge.contains(((Atom) message).getVarName()));
         }
@@ -400,10 +410,7 @@ public class Analyser {
             return flag;
         }
 
-//        if(replayable.contains(message)){
-//          System.out.println("EvalMsgSend() --- >> Replayable = true");
-//          return true;
-//        }
+
 
 
         return false;
@@ -413,28 +420,42 @@ public class Analyser {
         int initPos = 0;
         int respPos = 0;
         boolean respFlag = true;
-        for(int i = 0; i < init.size() + resp.size() ; i++){
+
+        for(int i = 0; i < 20; i++){
+            System.out.println("Iteration:" + i);
             if(respFlag){
-                if(evaluateMessage(resp.get(respPos))) {
-                    System.out.println("ResList. Index:" + respPos);
+                if (evaluateMessage(resp.get(respPos))){
+                    if(respPos == resp.size() - 1){
+                        System.out.println("Reached end of resp");
+                        break;
+                    }
+                    System.out.println("B" + respPos);
                     if(respPos < resp.size() - 1){
                         respPos++;
                     }
-
-                }else{
+                }
+                else{
                     respFlag = false;
                 }
-            }else{
+            }
+            else {
+
                 if(evaluateMessage(init.get(initPos))){
-                    System.out.println("InitList. Index:" + initPos);
+                    if(initPos == init.size() - 1){
+                        System.out.println("Reached end of init");
+                        break;
+                    }
+                    System.out.println("A" + initPos);
                     if(initPos < init.size() - 1){
                         initPos++;
                     }
-                }else {
+                }
+                else{
                     respFlag = true;
                 }
             }
         }
+
     }
 
 
