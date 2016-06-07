@@ -36,7 +36,7 @@ public class Visualiser extends JPanel {
         super.paintComponent(g);
         g.setFont(new Font("Serif", Font.BOLD, 16));
 
-        g.drawString("Original Message List" + "                  " + "Initiator Impersonation" + "\t\t" + "Responder Impersonation", x - 20, y - 20);
+        g.drawString("Original Message List" + "                         " + "Initiator Impersonation" + "                                   " + "Responder Impersonation", x - 20, y - 20);
         for (int i = 0; i < messages.size(); i++) {
             g.drawString(i + ". " + messages.get(i).getSenderId() + "-->" + messages.get(i).getReceiverId() + ": " + prettyPrinter.createPrettyMessage(messages.get(i)), x, y);
             g.drawString(i + ". " + initiator.get(i).getSenderId() + "-->" + initiator.get(i).getReceiverId() + ": " + prettyPrinter.createPrettyMessage(initiator.get(i)), 300, y);

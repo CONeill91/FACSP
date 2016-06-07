@@ -2,6 +2,8 @@ package analysis;
 
 import model.Protocol;
 import model.msg.*;
+import model.spec.Secret;
+import model.spec.Specification;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,6 +34,7 @@ public class Analyser {
         responderImpersonation = new ArrayList<>();
         knowledge = new HashSet<>();
         replayable = new HashSet<>();
+        path = new ArrayList<>();
 
         fillCopies();
         fillKnowledge();
@@ -39,7 +42,7 @@ public class Analyser {
 
 
 
-        doesPathExist(initiatorImpersonation,responderImpersonation);
+
 
 
 
@@ -251,10 +254,6 @@ public class Analyser {
            knowledge.add(((Atom) message).getVarName());
         }
 
-        if(message instanceof Xor){
-
-        }
-
         if(message instanceof UnDecryptable) {
             if(evaluateMessageReceived(message)){
                 knowledge.add(((UnDecryptable) message).getVarName());
@@ -327,10 +326,6 @@ public class Analyser {
             }
         }
 
-        if(message instanceof Xor){
-
-        }
-
         if(message instanceof UnDecryptable) {
            return evaluateMessageReceived(((UnDecryptable) message).getMessage());
         }
@@ -381,9 +376,6 @@ public class Analyser {
             return (knowledge.contains(((Atom) message).getVarName()));
         }
 
-        if (message instanceof Xor){
-
-        }
 
         if(message instanceof UnDecryptable){
             return (knowledge.contains(((UnDecryptable) message).getVarName()) && evaluateMessageSend(((UnDecryptable) message).getMessage()));
@@ -421,15 +413,16 @@ public class Analyser {
         int respPos = 0;
         boolean respFlag = true;
 
-        for(int i = 0; i < 20; i++){
+        for(int i = 0; i < 50; i++){ //
             System.out.println("Iteration:" + i);
             if(respFlag){
                 if (evaluateMessage(resp.get(respPos))){
                     if(respPos == resp.size() - 1){
                         System.out.println("Reached end of resp");
+                        path.add("B" + respPos);
                         break;
                     }
-                    System.out.println("B" + respPos);
+                    path.add("B" + respPos);
                     if(respPos < resp.size() - 1){
                         respPos++;
                     }
@@ -443,9 +436,10 @@ public class Analyser {
                 if(evaluateMessage(init.get(initPos))){
                     if(initPos == init.size() - 1){
                         System.out.println("Reached end of init");
+                        path.add("A" + initPos);
                         break;
                     }
-                    System.out.println("A" + initPos);
+                    path.add("A" + initPos);
                     if(initPos < init.size() - 1){
                         initPos++;
                     }
@@ -455,7 +449,16 @@ public class Analyser {
                 }
             }
         }
+    }
 
+    public boolean checkSpecifications(){
+        System.out.println(path);
+        for(Specification spec : protocol.getSpecifications()){
+            if(spec instanceof Secret){
+               return knowledge.contains(((Secret) spec).getSecret());
+            }
+        }
+        return false;
     }
 
 
@@ -501,5 +504,9 @@ public class Analyser {
 
     public ArrayList<Message> getResponderImpersonation() {
         return responderImpersonation;
+    }
+
+    public ArrayList<String> getPath() {
+        return path;
     }
 }

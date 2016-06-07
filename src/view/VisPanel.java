@@ -12,7 +12,9 @@ import java.util.ArrayList;
  */
 public class VisPanel extends JPanel {
     private JLabel headerLabel;
+    private JLabel steps;
     private JPanel visPanel;
+    private JPanel pathPanel;
     private Visualiser visualiser;
 
     public VisPanel(){
@@ -26,8 +28,22 @@ public class VisPanel extends JPanel {
         visPanel.setBackground(Color.LIGHT_GRAY);
         visPanel.setLayout(new BorderLayout());
 
+        pathPanel = new JPanel();
+        pathPanel.setBackground(Color.LIGHT_GRAY);
+        pathPanel.setLayout(new BorderLayout());
+
+
+        steps = new JLabel("Vulnerability Path: None");
+        steps.setHorizontalAlignment(SwingConstants.CENTER);
+        steps.setVerticalAlignment(SwingConstants.TOP);
+        steps.setBackground(Color.LIGHT_GRAY);
+        steps.setLayout(new BorderLayout());
+        steps.setFont(new Font("Serif", Font.BOLD, 20));
+
+        pathPanel.add(steps);
         add(headerLabel, BorderLayout.NORTH);
         add(visPanel, BorderLayout.CENTER);
+        add(pathPanel, BorderLayout.SOUTH);
 
     }
 
@@ -59,5 +75,9 @@ public class VisPanel extends JPanel {
 
     public void setVisualiser(Visualiser visualiser) {
         this.visualiser = visualiser;
+    }
+
+    public JLabel getSteps() {
+        return steps;
     }
 }

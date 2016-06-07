@@ -4,9 +4,9 @@
     <root id="archive" name="Facsp.jar">
       <element id="module-output" name="Facsp" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/JTattoo-1.6.11.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/libs/jlfgr-1_0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/junit-4.12.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/hamcrest-core-1.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/jlfgr-1_0.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

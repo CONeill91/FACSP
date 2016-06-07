@@ -76,7 +76,7 @@ public class PanelController {
     public JMenuBar initMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("File");
-        JMenu edit = new JMenu("Edit");
+
 
         JMenuItem save = new JMenuItem(new AbstractAction("Save & select this script") {
             @Override
@@ -107,7 +107,7 @@ public class PanelController {
         file.add(exit);
         menuBar.setVisible(true);
         menuBar.add(file);
-        menuBar.add(edit);
+
         return menuBar;
     }
 
@@ -194,6 +194,17 @@ public class PanelController {
                     setSpecLabel(protocol);
                     Analyser analyser = new Analyser(protocol);
                     initVisualiser(analyser.getInitiatorImpersonation(),analyser.getResponderImpersonation());
+                    analyser.doesPathExist(analyser.getInitiatorImpersonation(), analyser.getResponderImpersonation());
+
+                    if(analyser.checkSpecifications()){
+                        mainPanel.getInfoLabel().setText(mainPanel.getInfoLabel().getText().replace("Specifications: <br>", "Specifications: (Violated, see path to exploit below)<br> <html><span bgcolor=\"red\">") + "</span></html>");
+                        visPanel.getSteps().setText(createPathString(analyser.getPath()));
+                    }
+                    else{
+                        mainPanel.getInfoLabel().setText(mainPanel.getInfoLabel().getText().replace("Specifications: <br>", "Specifications: (Verified) <br> <html><span bgcolor=\"green\">") + "</span></html>");
+                        visPanel.getSteps().setText("<html><span bgcolor=\"green\">No vulnerability path detected </span></html>");
+
+                    }
                 } catch (ParseException p) {
                     System.out.println(p);
                     ErrorLocation errorLocation = getLineNumberFromParseException(p);
@@ -239,19 +250,18 @@ public class PanelController {
 
     public void setSpecLabel(Protocol protocol){
 
-        // "<html><span bgcolor=\"yellow\">This is the label text</span></html>" TODO highlight red / green on analysis
-
         StringBuilder builder = new StringBuilder();
-        int count = 1;
-        builder.append("Specifications: <br>");
-        for(Specification spec : protocol.getSpecifications()){
-            builder.append(count + ". ");
-            builder.append(specToStringLabel(spec));
-            builder.append("<br>");
-            count++;
+            int count = 1;
+            builder.append("Specifications: <br>");
+            for (Specification spec : protocol.getSpecifications()) {
+                builder.append(count + ". ");
+                builder.append(specToStringLabel(spec));
+                builder.append("<br>");
+                count++;
+            }
+            mainPanel.getInfoLabel().setText("<html>" + builder.toString() + "</html>");
         }
-        mainPanel.getInfoLabel().setText("<html>" + builder.toString() + "</html>");
-    }
+
 
 
     /**
@@ -298,6 +308,7 @@ public class PanelController {
         mainPanel.getErrorLabel().setText("Error: None");
         mainPanel.getFileLabel().setText("Casper Script Selected: None");
         mainPanel.getInfoLabel().setText("Specifications: None");
+        visPanel.getSteps().setText("Vulnerability Path: None");
     }
 
     /**
@@ -352,6 +363,20 @@ public class PanelController {
             return ("Aliveness. Participants: " + ((Aliveness) specification).getParticipant1() + " and " + ((Aliveness) specification).getParticipant2());
         }
         return "";
+    }
+
+    public String createPathString(ArrayList<String> path){
+        StringBuilder builder = new StringBuilder();
+        builder.append("<html><span bgcolor=\"red\">Vulnerability Path:  </span>" + "<br>");
+        for(String str: path){
+            if(str.charAt(0) == 'A'){
+                builder.append("Initiator step: " + str.charAt(1) + "<br>");
+            }
+            else{
+                builder.append("Responder Step:" + str.charAt(1) + "<br>");
+            }
+        }
+        return builder.toString() + "</html>";
     }
 
     /**
